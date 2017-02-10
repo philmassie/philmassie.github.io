@@ -10,3 +10,4 @@ github_username:  philmassie
 
 # Build settings
 markdown: kramdown
+encoding: utf-8

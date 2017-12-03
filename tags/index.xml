@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>philmassie@webafrica.org.za (Philip Massie)</managingEditor>
     <webMaster>philmassie@webafrica.org.za (Philip Massie)</webMaster>
-    <lastBuildDate>Thu, 04 Aug 2016 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 02 Dec 2017 15:58:09 +0200</lastBuildDate>
     
 	<atom:link href="https://philmassie.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>About Me</title>
+      <link>https://philmassie.github.io/tags/about-me/</link>
+      <pubDate>Sat, 02 Dec 2017 15:58:09 +0200</pubDate>
+      <author>philmassie@webafrica.org.za (Philip Massie)</author>
+      <guid>https://philmassie.github.io/tags/about-me/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Cheatsheet</title>

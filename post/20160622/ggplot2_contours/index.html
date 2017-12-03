@@ -212,13 +212,15 @@ ga('send', 'pageview');
 
 <p>Start by loading all the necessary libraries, setting working directories and loading data. You can download the EKE data set <a href="http://www.philmassie.com/data/data.eke.rdata">here</a>.</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>sp<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>rgdal<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>raster<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>ggplot2<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>plyr<span class="p">)</span>
-<span class="kp">load</span><span class="p">(</span>file <span class="o">=</span> <span class="s">&#34;data/data.eke.rdata&#34;</span><span class="p">)</span>
-<span class="kp">head</span><span class="p">(</span>data.eke<span class="p">)</span></code></pre></div>
+<pre><code class="language-r">library(sp)
+library(rgdal)
+library(raster)
+library(ggplot2)
+library(plyr)
+
+load(file = &quot;data/data.eke.rdata&quot;)
+head(data.eke)
+</code></pre>
 
 <pre><code>##       lon     lat          eke
 ## 1 -18.875 -68.625 1.052298e-04
@@ -367,7 +369,7 @@ plot.eke.colour &lt;- ggplot() +
 plot.eke.colour
 </code></pre>
 
-<p><img src="coloured_plot-1.png" alt="Coloured contour plot" /><!-- --></p>
+<p><img src="coloured_plot-1.png" alt="" /><!-- --></p>
 
 <p>That looks pretty good. Unfortunately when we save the file, things don&rsquo;t always look the same as they do on the screen so there is generally some fine tuning involved. This version, as it stands, makes rather a good print. The colour palette is familiar to all my MATLAB/Python oceanographic colleagues too.</p>
 
@@ -437,7 +439,7 @@ rm(bins, bin.width, arbitary.value, min, max, seq.lat, seq.lon, west.edge, east.
 plot.eke.contour.grey
 </code></pre>
 
-<p><img src="greyscale_plot-1.png" alt="Greyscale contoured plot" /><!-- --></p>
+<p><img src="greyscale_plot-1.png" alt="" /><!-- --></p>
 
 <p>There we go! The contours look great. There aren&rsquo;t too many of them, they don&rsquo;t have distracting borders, the 3000 m bathymetry contour looks nice and isn&rsquo;t overly distracting.</p>
 

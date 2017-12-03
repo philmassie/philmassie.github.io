@@ -5,12 +5,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>South African Local Government Elections 2016</title>
-  <meta property="og:title" content="South African Local Government Elections 2016" />
-  <meta name="twitter:title" content="South African Local Government Elections 2016" />
-  <meta name="description" content="A comparison of party effort across municipalities / districts With South Africa&rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.">
-  <meta property="og:description" content="A comparison of party effort across municipalities / districts With South Africa&rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.">
-  <meta name="twitter:description" content="A comparison of party effort across municipalities / districts With South Africa&rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the …">
+  <title>South African municipal elections 2016</title>
+  <meta property="og:title" content="South African municipal elections 2016" />
+  <meta name="twitter:title" content="South African municipal elections 2016" />
+  <meta name="description" content="A visual comparison of party effort across municipalities / districts With South Africa&rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.">
+  <meta property="og:description" content="A visual comparison of party effort across municipalities / districts With South Africa&rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.">
+  <meta name="twitter:description" content="A visual comparison of party effort across municipalities / districts With South Africa&rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by …">
   <meta name="author" content="Philip Massie"/>
   <link href='https://philmassie.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
   <meta property="og:image" content="https://philmassie.github.io/img/mug.png" />
@@ -162,12 +162,12 @@ ga('send', 'pageview');
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             <div class="post-heading">
-              <h1>South African Local Government Elections 2016</h1>
+              <h1>South African municipal elections 2016</h1>
                 
                 
                   <span class="post-meta">
   <i class="fa fa-calendar-o"></i>&nbsp;Posted on July 14, 2016
-  &nbsp;|&nbsp; <i class="fa fa-clock-o"></i> 6 min (1127 mots)
+  &nbsp;|&nbsp; <i class="fa fa-clock-o"></i> 6 min (1130 mots)
   
 </span>
 
@@ -188,7 +188,7 @@ ga('send', 'pageview');
       <article role="main" class="blog-post">
         
 
-<h3 id="a-comparison-of-party-effort-across-municipalities-districts">A comparison of party effort across municipalities / districts</h3>
+<h3 id="a-visual-comparison-of-party-effort-across-municipalities-districts">A visual comparison of party effort across municipalities / districts</h3>
 
 <p>With South Africa&rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.</p>
 
@@ -231,6 +231,7 @@ library(xlsx) #
 library(plyr)#
 library(stringr)#
 library(dplyr) #
+setwd(&quot;D:/My Folders/R/2016/blog/20160714_election_effort&quot;)
 </code></pre>
 
 <pre><code class="language-r"># Load the district shape file to get a list of district codes
@@ -341,7 +342,7 @@ write.csv(d3_party_list, file=&quot;data_d3/d3_party_list.csv&quot;, row.names =
         
         
           <li class="next">
-            <a href="https://philmassie.github.io/post/20160804/r_netcdf_cheatsheet/" data-toggle="tooltip" data-placement="top" title="R NetCDF cheatsheet">Next Post &rarr;</a>
+            <a href="https://philmassie.github.io/post/20160804/r_netcdf_cheatsheet/" data-toggle="tooltip" data-placement="top" title="R Netcdf cheatsheet">Next Post &rarr;</a>
           </li>
         
       </ul>

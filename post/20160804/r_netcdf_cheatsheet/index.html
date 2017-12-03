@@ -5,9 +5,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>R NetCDF cheatsheet</title>
-  <meta property="og:title" content="R NetCDF cheatsheet" />
-  <meta name="twitter:title" content="R NetCDF cheatsheet" />
+  <title>R Netcdf cheatsheet</title>
+  <meta property="og:title" content="R Netcdf cheatsheet" />
+  <meta name="twitter:title" content="R Netcdf cheatsheet" />
   <meta name="description" content="I recently promised a &ldquo;NetCDF in R&rdquo; cheat sheet to a friend, and I thought it might make a useful tutorial. NetCDF files are often used to distribute gridded, multidimensional spatial data such as sea surface temperature, chlorophyll-a levels and so on. NetCDF is more than just a file format, and so googling it can be a little intimidating. I hope this helps make these files a little easier to use in R.">
   <meta property="og:description" content="I recently promised a &ldquo;NetCDF in R&rdquo; cheat sheet to a friend, and I thought it might make a useful tutorial. NetCDF files are often used to distribute gridded, multidimensional spatial data such as sea surface temperature, chlorophyll-a levels and so on. NetCDF is more than just a file format, and so googling it can be a little intimidating. I hope this helps make these files a little easier to use in R.">
   <meta name="twitter:description" content="I recently promised a &ldquo;NetCDF in R&rdquo; cheat sheet to a friend, and I thought it might make a useful tutorial. NetCDF files are often used to distribute gridded, multidimensional spatial data …">
@@ -162,12 +162,12 @@ ga('send', 'pageview');
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             <div class="post-heading">
-              <h1>R NetCDF cheatsheet</h1>
+              <h1>R Netcdf cheatsheet</h1>
                 
                 
                   <span class="post-meta">
   <i class="fa fa-calendar-o"></i>&nbsp;Posted on August 4, 2016
-  &nbsp;|&nbsp; <i class="fa fa-clock-o"></i> 7 min (1385 mots)
+  &nbsp;|&nbsp; <i class="fa fa-clock-o"></i> 7 min (1377 mots)
   
 </span>
 
@@ -203,7 +203,7 @@ ga('send', 'pageview');
 <pre><code class="language-r">library(ncdf4)
 library(reshape2)
 library(dplyr)
-setwd(&quot;D:/My Folders/R/2016/blog/20160804_r_netcdf_cheatsheet&quot;)
+
 # retrieve a list of nc files in my data folder:
 flist &lt;- list.files(path = &quot;data/&quot;, pattern = &quot;^.*\\.(nc|NC|Nc|Nc)$&quot;)
 </code></pre>
@@ -418,14 +418,14 @@ process_nc &lt;- function(files){
 data &lt;- process_nc(flist)
 </code></pre>
 
-<p>Ok that&rsquo;s it. I hope someone finds this useful :). Please feel free to comment below.</p>
+<p>Ok that&rsquo;s it. I hope someone finds this useful :).</p>
 
       </article>
 
       <ul class="pager blog-pager">
         
           <li class="previous">
-            <a href="https://philmassie.github.io/post/20160714/election_effort/" data-toggle="tooltip" data-placement="top" title="South African Local Government Elections 2016">&larr; Previous Post</a>
+            <a href="https://philmassie.github.io/post/20160714/election_effort/" data-toggle="tooltip" data-placement="top" title="South African municipal elections 2016">&larr; Previous Post</a>
           </li>
         
         

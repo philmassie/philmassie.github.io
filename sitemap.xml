@@ -28,6 +28,18 @@
   </url>
   
   <url>
+    <loc>https://philmassie.github.io/post/20171216/add_simple_authentication_to_rshiny/</loc>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/post/20171216/add_ssl_authentication_to_rshiny_server/</loc>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/post/20171216/install_rshiny_server_on_linux_server/</loc>
+  </url>
+  
+  <url>
     <loc>https://philmassie.github.io/tags/about-me/</loc>
     <lastmod>2017-12-02T15:58:09+02:00</lastmod>
     <priority>0</priority>

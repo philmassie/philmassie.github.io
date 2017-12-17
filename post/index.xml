@@ -50,5 +50,32 @@ In my article I wanted a graphic which illustrated the preferred outward post-mo
 Additionally, this tutorial covers a little bit about working with reshaped gridded data, shape files, GeoTIFF data and even a simple homemade polygon.</description>
     </item>
     
+    <item>
+      <title></title>
+      <link>https://philmassie.github.io/post/20171216/add_simple_authentication_to_rshiny/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>philmassie@webafrica.org.za (Philip Massie)</author>
+      <guid>https://philmassie.github.io/post/20171216/add_simple_authentication_to_rshiny/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://philmassie.github.io/post/20171216/add_ssl_authentication_to_rshiny_server/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>philmassie@webafrica.org.za (Philip Massie)</author>
+      <guid>https://philmassie.github.io/post/20171216/add_ssl_authentication_to_rshiny_server/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://philmassie.github.io/post/20171216/install_rshiny_server_on_linux_server/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>philmassie@webafrica.org.za (Philip Massie)</author>
+      <guid>https://philmassie.github.io/post/20171216/install_rshiny_server_on_linux_server/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

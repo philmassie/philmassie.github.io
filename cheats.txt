@@ -1,0 +1,12 @@
+kabelsalat
+ hugo -d ../philmassie.github.io/
+cd ../philmassie.github.io/
+
+
+
+
+philmassie.github.io
+git status
+git add .
+git commit -m "message"
+pit push origin master

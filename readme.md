@@ -1,2 +1,2 @@
-kabelsalat
-This is my blog
+# kabelsalat
+A repo for my github pages blog

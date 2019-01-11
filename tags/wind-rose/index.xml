@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Wind Rose on kabelsalat</title>
+    <link>https://philmassie.github.io/tags/wind-rose/</link>
+    <description>Recent content in Wind Rose on kabelsalat</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <managingEditor>philmassie@webafrica.org.za (Philip Massie)</managingEditor>
+    <webMaster>philmassie@webafrica.org.za (Philip Massie)</webMaster>
+    <lastBuildDate>Thu, 30 Jun 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://philmassie.github.io/tags/wind-rose/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Plot a wind rose in R</title>
+      <link>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</link>
+      <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+      <author>philmassie@webafrica.org.za (Philip Massie)</author>
+      <guid>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</guid>
+      <description>Introduction This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.
+In my article I wanted a graphic which illustrated the preferred outward post-moult migration direction of adult female southern elephant seals from Marion Island.</description>
+    </item>
+    
+  </channel>
+</rss>

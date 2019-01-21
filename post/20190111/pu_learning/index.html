@@ -177,7 +177,7 @@ if (!doNotTrack) {
                 
                   <span class="post-meta">
   <i class="fa fa-calendar-o"></i>&nbsp;Posted on January 11, 2019
-  &nbsp;|&nbsp; <i class="fa fa-clock-o"></i> 6 min (1140 mots)
+  &nbsp;|&nbsp; <i class="fa fa-clock-o"></i> 6 min (1142 mots)
   
 </span>
 
@@ -210,7 +210,7 @@ if (!doNotTrack) {
 
 <p>There are a few different PU approaches around. All the approaches involve isolating a set of so-called Reliable Negatives (RNs) from the unknown data set. As I read, the most widely cited, initial approaches are attributed to Liu et al. 2002 and 2003 wherein a set of RNs are iteratively grown from within the unknown class.</p>
 
-<p>Another approach which appealed to me was described by Fusilier et al. 2015 wherein the authors describe an approach which iteratively reduces the set of RNs from within the unknown class, effectively tightening the net around those cases which are the most dissimilar to the positive class. This approach appealed to me as it implicitly deals with class imbalance.</p>
+<p>Another approach which appealed to me was described by Fusilier et al. 2015. In their paper the authors describe an approach which iteratively reduces the set of RNs from within the unknown class, effectively tightening the net around those cases which are the most dissimilar to the positive class. This approach appealed to me as it implicitly deals with class imbalance.</p>
 
 <p>The third approach I came across (Mordelet &amp; Vert 2013) which also implicitly accounts for class imbalance involves bagging, or randomly sampling from the unknown class and treating the sample as negatives. Where this deviates from my naive approach mentioned above is that the process is repeated many times and a series of models are trained. The models characterise the positive class against unknown data sets with varying degrees of contamination. The resulting model scores are ensembled and the result should better isolate the reliable negatives from the unknown class.</p>
 

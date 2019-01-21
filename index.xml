@@ -18,8 +18,7 @@
       <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
       <author>philmassie@webafrica.org.za (Philip Massie)</author>
       <guid>https://philmassie.github.io/post/20190111/pu_learning/</guid>
-      <description>PU Learning Introduction Disclaimer: This post is not intended to be an exhaustive review of the PU learning approaches. Essentially, it&amp;rsquo;s just me making some notes and storing them somewhere I can find them again, and where they may be helpful to someone else.
-A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier.</description>
+      <description>A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly imbalanced data sets and pressed for time, I have often taken the simplistic route of sub-sampling the unknown set and treating them as unknowns. Obviously this isn&amp;rsquo;t ideal as the unknown set is contaminated and as a result the classifiers dont train that well.</description>
     </item>
     
     <item>

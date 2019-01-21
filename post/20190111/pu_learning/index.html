@@ -8,11 +8,9 @@
   <title>PU Learning</title>
   <meta property="og:title" content="PU Learning" />
   <meta name="twitter:title" content="PU Learning" />
-  <meta name="description" content="PU Learning Introduction Disclaimer: This post is not intended to be an exhaustive review of the PU learning approaches. Essentially, it&rsquo;s just me making some notes and storing them somewhere I can find them again, and where they may be helpful to someone else.
-A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier.">
-  <meta property="og:description" content="PU Learning Introduction Disclaimer: This post is not intended to be an exhaustive review of the PU learning approaches. Essentially, it&rsquo;s just me making some notes and storing them somewhere I can find them again, and where they may be helpful to someone else.
-A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier.">
-  <meta name="twitter:description" content="PU Learning Introduction Disclaimer: This post is not intended to be an exhaustive review of the PU learning approaches. Essentially, it&rsquo;s just me making some notes and storing them somewhere I …">
+  <meta name="description" content="A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly imbalanced data sets and pressed for time, I have often taken the simplistic route of sub-sampling the unknown set and treating them as unknowns. Obviously this isn&rsquo;t ideal as the unknown set is contaminated and as a result the classifiers dont train that well.">
+  <meta property="og:description" content="A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly imbalanced data sets and pressed for time, I have often taken the simplistic route of sub-sampling the unknown set and treating them as unknowns. Obviously this isn&rsquo;t ideal as the unknown set is contaminated and as a result the classifiers dont train that well.">
+  <meta name="twitter:description" content="A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly …">
   <meta name="author" content="Philip Massie"/>
   <link href='https://philmassie.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
   <meta property="og:image" content="https://philmassie.github.io/img/mug.png" />
@@ -177,7 +175,7 @@ if (!doNotTrack) {
                 
                   <span class="post-meta">
   <i class="fa fa-calendar-o"></i>&nbsp;Posted on January 11, 2019
-  &nbsp;|&nbsp; <i class="fa fa-clock-o"></i> 6 min (1139 mots)
+  &nbsp;|&nbsp; <i class="fa fa-clock-o"></i> 6 min (1132 mots)
   
 </span>
 
@@ -198,19 +196,15 @@ if (!doNotTrack) {
       <article role="main" class="blog-post">
         
 
-<h1 id="pu-learning">PU Learning</h1>
-
-<h2 id="introduction">Introduction</h2>
-
-<p><em>Disclaimer: This post is not intended to be an exhaustive review of the PU learning approaches. Essentially, it&rsquo;s just me making some notes and storing them somewhere I can find them again, and where they may be helpful to someone else.</em></p>
-
 <p>A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly imbalanced data sets and pressed for time, I have often taken the simplistic route of sub-sampling the unknown set and treating them as unknowns. Obviously this isn&rsquo;t ideal as the unknown set is contaminated and as a result the classifiers dont train that well. Nevertheless, out in the wild, with real-life deadlines, the approach was time efficient, and the results were often surprisingly useful.</p>
 
 <p>Recently, I was lucky to have a few days to read around the topic a little. I found some interesting approaches and thought it would be worth taking a few notes, and they turned into this post.</p>
 
-<p>There are a few different PU approaches around. All the approaches involve isolating a set of so-called Reliable Negatives (RNs) from the unknown data set. As I read, the most widely cited, initial approaches are attributed to Liu et al. 2002 and 2003 wherein a set of RNs are iteratively grown from within the unknown class.</p>
+<p><em>Disclaimer: This post is not intended to be an exhaustive review of the PU learning approaches. Essentially, it&rsquo;s just me making some notes and storing them somewhere I can find them again, and where they may be helpful to someone else.</em></p>
 
-<p>Another approach which appealed to me was described by Fusilier et al. 2015. In their paper the authors describe an approach which iteratively reduces the set of RNs from within the unknown class, effectively tightening the net around those cases which are the most dissimilar to the positive class. This approach appealed to me as it implicitly deals with class imbalance.</p>
+<p>There are a few different PU approaches around. All the approaches involve isolating a set of so-called &lsquo;Reliable Negatives&rsquo; (RNs) from the unknown data set. As I read, the most widely cited, initial approaches are attributed to Liu et al. 2002 and 2003 wherein a set of RNs are iteratively grown from within the unknown class.</p>
+
+<p>Another approach was described by Fusilier et al. 2015. In their paper the authors describe an approach which iteratively reduces the set of RNs from within the unknown class, effectively tightening the net around those cases which are the most dissimilar to the positive class. This approach appealed to me as it implicitly deals with class imbalance.</p>
 
 <p>The third approach I came across (Mordelet &amp; Vert 2013) which also implicitly accounts for class imbalance involves bagging, or randomly sampling from the unknown class and treating the sample as negatives. Where this deviates from my naive approach mentioned above is that the process is repeated many times and a series of models are trained. The models characterise the positive class against unknown data sets with varying degrees of contamination. The resulting model scores are ensembled and the result should better isolate the reliable negatives from the unknown class.</p>
 

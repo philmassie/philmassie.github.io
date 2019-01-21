@@ -245,7 +245,7 @@ if (!doNotTrack) {
 <p>Where <code>Q</code> is defined as the set of unknowns classified as negatives and <code>i</code> is the iterator, the stopping condition is defined as:</p>
 
 <blockquote>
-<p><code>|Qi| &lt;= |Q(i-1)| &amp; |P| &lt; |RNi|</code></p>
+<p><code>|Qi| &lt;= |Q(i-1)| &amp; |P| &lt; |Qi|</code></p>
 </blockquote>
 
 <p>The stopping condition ensures that Q reduces in size (avoiding sudden large reductions in RN size) while the RN set never gets smaller than the P set. More explicitly:</p>

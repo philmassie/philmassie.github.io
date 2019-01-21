@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>philmassie@webafrica.org.za (Philip Massie)</managingEditor>
     <webMaster>philmassie@webafrica.org.za (Philip Massie)</webMaster>
-    <lastBuildDate>Sat, 02 Dec 2017 15:58:09 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 21 Jan 2019 15:03:00 +0200</lastBuildDate>
     
 	<atom:link href="https://philmassie.github.io/page/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,11 +15,11 @@
     <item>
       <title>About me</title>
       <link>https://philmassie.github.io/page/about/</link>
-      <pubDate>Sat, 02 Dec 2017 15:58:09 +0200</pubDate>
+      <pubDate>Mon, 21 Jan 2019 15:03:00 +0200</pubDate>
       <author>philmassie@webafrica.org.za (Philip Massie)</author>
       <guid>https://philmassie.github.io/page/about/</guid>
-      <description>My name is Philip Massie. I am a data scientist, trained in conservation biology, marine biology and oceanography. I worked for many years in the IT industry in web development, client and server side, and have a good working knowledge of various server architecture stacks. I am currently working as part of a great data science team in the financial services sector.
-I am driven to find areas where data can serve the greater good, or tell stories about our environment.</description>
+      <description>I am a data scientist trained in statistical ecology. I have degrees in conservation biology, marine biology and oceanography but now work in the financial services sector as park of a great team.
+I worked for many years in web development, client and server side, and have a good working knowledge of various server architecture stacks and have experience in numerous scripting languages. I&amp;rsquo;ve found that the combination of my IT experience and science skills and mindset has prepared me well for a career in data science.</description>
     </item>
     
   </channel>

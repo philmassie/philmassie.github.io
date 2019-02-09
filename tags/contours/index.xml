@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>contours on Kabelsalat</title>
+    <link>https://philmassie.github.io/tags/contours/</link>
+    <description>Recent content in contours on Kabelsalat</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 22 Jun 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://philmassie.github.io/tags/contours/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Greyscale Contour Plots</title>
+      <link>https://philmassie.github.io/post/20160622/ggplot2_contours/</link>
+      <pubDate>Wed, 22 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://philmassie.github.io/post/20160622/ggplot2_contours/</guid>
+      <description>Introduction Preparing figures for publication can take a long time (well it does for me anyway), and I relied very heavily on numerous online resources to figure out some of the dos and don&amp;rsquo;ts. Obviously I owe massive thanks to the hundreds of blogs and Stack Exchange questions and answers I relied on. Where I can, I will try to link to them.
+Additionally, this tutorial covers a little bit about working with reshaped gridded data, shape files, GeoTIFF data and even a simple homemade polygon.</description>
+    </item>
+    
+  </channel>
+</rss>

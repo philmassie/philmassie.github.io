@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://philmassie.github.io/top/about/</loc>
+    <lastmod>2019-01-21T15:03:00+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/post/20190111/pu_learning/</loc>
+    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/post/20160804/r_netcdf_cheatsheet/</loc>
+    <lastmod>2016-08-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/post/20160714/election_effort/</loc>
+    <lastmod>2016-07-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</loc>
+    <lastmod>2016-06-30T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/post/20160622/ggplot2_contours/</loc>
+    <lastmod>2016-06-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/d3/</loc>
+    <lastmod>2016-07-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/election-2016/</loc>
+    <lastmod>2016-07-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/</loc>
+    <lastmod>2019-01-21T15:03:00+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/maps/</loc>
+    <lastmod>2016-07-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/netcfd/</loc>
+    <lastmod>2016-08-04T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/pu-learning/</loc>
+    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/post/</loc>
+    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/r/</loc>
+    <lastmod>2016-08-04T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/south-africa/</loc>
+    <lastmod>2016-07-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/</loc>
+    <lastmod>2016-07-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/top/</loc>
+    <lastmod>2019-01-21T15:03:00+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/about-me/</loc>
+    <lastmod>2019-01-21T15:03:00+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/cheatsheet/</loc>
+    <lastmod>2016-08-04T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/class-imbalance/</loc>
+    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/contours/</loc>
+    <lastmod>2016-06-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/data-science/</loc>
+    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/ggplot2/</loc>
+    <lastmod>2016-06-30T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/greyscale/</loc>
+    <lastmod>2016-06-30T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/machine-learning/</loc>
+    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/visualisation/</loc>
+    <lastmod>2016-07-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://philmassie.github.io/tags/wind-rose/</loc>
+    <lastmod>2016-06-30T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

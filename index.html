@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta name="generator" content="Hugo 0.54.0" /><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Kabelsalat">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://philmassie.github.io//img/201402_tankwa_099_IMG_6752.jpg">
+    <meta property="twitter:image" content="https://philmassie.github.io//img/201402_tankwa_099_IMG_6752.jpg" />
+    
+
+    
+    <meta name="title" content="" />
+    <meta property="og:title" content="" />
+    <meta property="twitter:title" content="" />
+    
+
+    
+    <meta name="description" content="A small blog site, mainly data science, rarely updated.">
+    <meta property="og:description" content="A small blog site, mainly data science, rarely updated." />
+    <meta property="twitter:description" content="A small blog site, mainly data science, rarely updated." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="data science, predictive analytics, machine learning, visualisation, photography, spark, python, R, scala">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Kabelsalat-Kabelsalat | Phil Massie&#39;s blog</title>
+
+    <link rel="canonical" href="/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+	
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Kabelsalat</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+		    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+<header class="intro-header" style="background-image: url('/img/201402_tankwa_099_IMG_6752.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>Kabelsalat </h1>
+                    
+		    <span class="subheading">http://philmassie.github.com</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+  
+<div class="container">
+    <div class="row">
+        
+        
+   	    <div class="
+            col-lg-8 col-lg-offset-1
+            col-md-8 col-md-offset-1
+            col-sm-12
+            col-xs-12
+            post-container
+        ">
+            
+
+<div class="post-preview">
+    <a href="https://philmassie.github.io/post/20190111/pu_learning/">
+        <h2 class="post-title">
+            PU Learning
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Positive/unknown class machine learning approaches
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Introduction A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly imbalanced data sets and pressed for time, I have often taken the simplistic route of sub-sampling the unknown set and treating them as unknowns. Obviously this isn&rsquo;t ideal as the unknown set is contaminated and as a result the classifiers dont train that well.
+       
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by Philip Massie Friday, January 11, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://philmassie.github.io/post/20160804/r_netcdf_cheatsheet/">
+        <h2 class="post-title">
+            R Netcdf cheatsheet
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            Introduction I recently promised a &ldquo;NetCDF in R&rdquo; cheat sheet to a friend, and I thought it might make a useful tutorial. NetCDF files are often used to distribute gridded, multidimensional spatial data such as sea surface temperature, chlorophyll-a levels and so on. NetCDF is more than just a file format, and so googling it can be a little intimidating. I hope this helps make these files a little easier to use in R.
+       
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by Philip Massie Thursday, August 4, 2016
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://philmassie.github.io/post/20160714/election_effort/">
+        <h2 class="post-title">
+            South African municipal elections 2016
+        </h2>
+	
+        <h3 class="post-subtitle">
+            A visual comparison of party effort across municipalities / districts
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Introduction With South Africa&rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.
+Employing and promoting candidates costs money. Assuming that our political parties don&rsquo;t have infinite financial resources it follows that investigating where they invest their resources may be a reasonable proxy for effort.
+       
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by Philip Massie Thursday, July 14, 2016
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://philmassie.github.io/post/20160630/ggplot2_wind_rose/">
+        <h2 class="post-title">
+            Windrose Plots
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Plotting a windrose in R with ggplot2
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Style for changing title colour depending on photo  div.post-heading h1, div.post-heading h2, div.post-heading span.meta { color: midnightblue; }  Introduction This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.
+       
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by Philip Massie Thursday, June 30, 2016
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://philmassie.github.io/post/20160622/ggplot2_contours/">
+        <h2 class="post-title">
+            Greyscale Contour Plots
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Plotting greyscale contoured data in R with ggplot2
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Introduction Preparing figures for publication can take a long time (well it does for me anyway), and I relied very heavily on numerous online resources to figure out some of the dos and don&rsquo;ts. Obviously I owe massive thanks to the hundreds of blogs and Stack Exchange questions and answers I relied on. Where I can, I will try to link to them.
+Additionally, this tutorial covers a little bit about working with reshaped gridded data, shape files, GeoTIFF data and even a simple homemade polygon.
+       
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by Philip Massie Wednesday, June 22, 2016
+    </p>
+</div>
+<hr>
+
+
+            
+
+
+
+       	</div>
+        
+
+<div class="
+    col-lg-3 col-lg-offset-0
+    col-md-3 col-md-offset-0
+    col-sm-12
+    col-xs-12
+    sidebar-container
+">
+    
+    
+    <section>
+        <hr class="hidden-sm hidden-xs">
+        <h5>FEATURED TAGS</h5>
+        <div class="tags">
+             
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                    <a href="/tags/r" title="R">
+                        R
+                    </a>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                    <a href="/tags/ggplot2" title="ggplot2">
+                        ggplot2
+                    </a>
+                
+            
+                
+                    <a href="/tags/greyscale" title="greyscale">
+                        greyscale
+                    </a>
+                
+            
+                
+            
+                
+                    <a href="/tags/visualisation" title="visualisation">
+                        visualisation
+                    </a>
+                
+            
+                
+            
+        </div>
+    </section>
+    
+
+    
+    <section class="visible-md visible-lg">
+        <hr><h5><a href="">ABOUT ME</a></h5>
+        <div class="short-about">
+            
+            <img src="/img/img_1191.jpg" />
+            
+            
+                <p>Data scientist, wishful photographer.</p>
+            
+           
+           <ul class="list-inline"> 
+               
+               <li>
+                   <a href="https://philmassie.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Kabelsalat" >
+                       <span class="fa-stack fa-lg">
+                           <i class="fa fa-circle fa-stack-2x"></i>
+                           <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                       </span>
+                   </a>
+               </li>
+               
+               
+               
+               
+               
+               
+               
+               <li>
+                   <a target="_blank" href="https://github.com/philmassie">
+                       <span class="fa-stack fa-lg">
+                           <i class="fa fa-circle fa-stack-2x"></i>
+                           <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                       </span>
+                   </a>
+               </li>
+               
+               
+               <li>
+                   <a target="_blank" href="https://www.linkedin.com/in/philmassie">
+                       <span class="fa-stack fa-lg">
+                           <i class="fa fa-circle fa-stack-2x"></i>
+                           <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                       </span>
+                   </a>
+               </li>
+               
+               
+               <li>
+                   <a target="_blank" href="https://medium.com/@pmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                   </a>
+               </li>
+               
+                </ul>
+            </div>
+    </section>
+    
+    
+    <section>
+        <hr class="hidden-sm hidden-xs">
+        <h5>FRIENDS</h5>
+        <ul class="list-inline">
+            
+            <li><a target="_blank" href="https://medium.com/@kirshnee.m">Kirshnee Bhagwandas</a></li>
+            
+        </ul>
+    </section>
+    
+
+    
+    
+</div>
+
+	</div>
+</div>
+
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="https://philmassie.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Kabelsalat" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:philmassie@webafrica.org.za">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/philmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/philmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@pmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Kabelsalat , 2019
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-24074009-12', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

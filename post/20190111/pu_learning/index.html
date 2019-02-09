@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Kabelsalat">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://philmassie.github.io//img/201402_tankwa_099_IMG_6752.jpg">
+    <meta property="twitter:image" content="https://philmassie.github.io//img/201402_tankwa_099_IMG_6752.jpg" />
+    
+
+    
+    <meta name="title" content="PU Learning" />
+    <meta property="og:title" content="PU Learning" />
+    <meta property="twitter:title" content="PU Learning" />
+    
+
+    
+    <meta name="description" content="A small blog site, mainly data science, rarely updated.">
+    <meta property="og:description" content="A small blog site, mainly data science, rarely updated." />
+    <meta property="twitter:description" content="A small blog site, mainly data science, rarely updated." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="data science, predictive analytics, machine learning, visualisation, photography, spark, python, R, scala">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>PU Learning-Kabelsalat | Phil Massie&#39;s blog</title>
+
+    <link rel="canonical" href="/post/20190111/pu_learning/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+	
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Kabelsalat</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+		    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/post/20190111/pu_learning/20180727_174527_rocherpan.jpg')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/pu-learning" title="PU learning">
+                            PU learning
+                        </a>
+                        
+                        <a class="tag" href="/tags/machine-learning" title="machine learning">
+                            machine learning
+                        </a>
+                        
+                        <a class="tag" href="/tags/data-science" title="data science">
+                            data science
+                        </a>
+                        
+                        <a class="tag" href="/tags/class-imbalance" title="class imbalance">
+                            class imbalance
+                        </a>
+                        
+                    </div>
+                    <h1>PU Learning</h1>
+                    <h2 class="subheading">Positive/unknown class machine learning approaches</h2>
+                    <span class="meta">
+			Posted by 
+			
+			    Philip Massie
+			 
+			on 
+			Friday, January 11, 2019
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#methods">Methods</a>
+<ul>
+<li><a href="#original-approach-liu-et-al-2002-and-2003">&lsquo;Original&rsquo; approach (Liu et al. 2002 and 2003)</a></li>
+<li><a href="#modified-approach-fusilier-et-al-2014">Modified approach (Fusilier et al. 2014)</a></li>
+<li><a href="#bagging-approach-inductive-mordelet-vert-2013">Bagging approach (Inductive) (Mordelet &amp; Vert 2013)</a></li>
+<li><a href="#things-to-follow-up-on">Things to follow up on:</a></li>
+</ul></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</nav>
+                
+                
+
+<h1 id="introduction">Introduction</h1>
+
+<p>A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly imbalanced data sets and pressed for time, I have often taken the simplistic route of sub-sampling the unknown set and treating them as unknowns. Obviously this isn&rsquo;t ideal as the unknown set is contaminated and as a result the classifiers dont train that well. Nevertheless, out in the wild, with real-life deadlines, the approach was time efficient, and the results were often surprisingly useful.</p>
+
+<p>Recently, I was lucky to have a few days to read around the topic a little. I found some interesting approaches and thought it would be worth taking a few notes, and they turned into this post.</p>
+
+<p><em>Disclaimer: This post is not intended to be an exhaustive review of the PU learning approaches. Essentially, it&rsquo;s just me making some notes and storing them somewhere I can find them again, and where they may be helpful to someone else.</em></p>
+
+<p>There are a few different PU approaches around. All the approaches involve isolating a set of so-called &lsquo;Reliable Negatives&rsquo; (RNs) from the unknown data set. As I read, the most widely cited, initial approaches are attributed to Liu et al. 2002 and 2003 wherein a set of RNs are iteratively grown from within the unknown class.</p>
+
+<p>Another approach was described by Fusilier et al. 2015. In their paper the authors describe an approach which iteratively reduces the set of RNs from within the unknown class, effectively tightening the net around those cases which are the most dissimilar to the positive class. This approach appealed to me as it implicitly deals with class imbalance.</p>
+
+<p>The third approach I came across (Mordelet &amp; Vert 2013) which also implicitly accounts for class imbalance involves bagging, or randomly sampling from the unknown class and treating the sample as negatives. Where this deviates from my naive approach mentioned above is that the process is repeated many times and a series of models are trained. The models characterise the positive class against unknown data sets with varying degrees of contamination. The resulting model scores are ensembled and the result should better isolate the reliable negatives from the unknown class.</p>
+
+<p>Below, I will go into a little detail about each of the three approaches.</p>
+
+<h1 id="methods">Methods</h1>
+
+<h2 id="original-approach-liu-et-al-2002-and-2003">&lsquo;Original&rsquo; approach (Liu et al. 2002 and 2003)</h2>
+
+<p>Given a training set containing only positives (P) and unknown (U) classes follow the following steps:</p>
+
+<ol>
+<li>Treating all U as negatives (N) train a classifier P vs. U</li>
+<li>Using the classifier, score the unknown class and isolate the set of &lsquo;reliable&rsquo; negatives (RN).</li>
+<li>Train a new classifier on P vs. RN, use it to score the remaining U, isolate additional RN and enlarge RN.</li>
+<li>Repeat step 3, iteratively enlarging the set of RN until the stopping condition is met.</li>
+</ol>
+
+<p>The stopping condition is met when no new negative cases are classified.</p>
+
+<p>Where <code>Q</code> is defined as the set of unknowns classified as negatives and <code>i</code> is the iterator, the stopping condition is defined as:</p>
+
+<blockquote>
+<p><code>|Qi| &gt; 0</code></p>
+</blockquote>
+
+<h2 id="modified-approach-fusilier-et-al-2014">Modified approach (Fusilier et al. 2014)</h2>
+
+<p>Given a training set containing only positives (P) and unknown (U) classes follow the following steps:</p>
+
+<ol>
+<li>Treating all U as negatives (N) train a classifier P vs. U</li>
+<li>Using the classifier, score the unknown class and isolate the set of &lsquo;reliable&rsquo; negatives (RN).</li>
+<li>Train a new classifier on P vs. RN. Score RN and exclude predicted positives from RN</li>
+<li>Repeat step 3, iteratively refining the RN set, until the stopping condition is met.</li>
+</ol>
+
+<p>Where <code>Q</code> is defined as the set of unknowns classified as negatives and <code>i</code> is the iterator, the stopping condition is defined as:</p>
+
+<blockquote>
+<p><code>|Qi| &lt;= |Q(i-1)| &amp; |P| &lt; |Qi|</code></p>
+</blockquote>
+
+<p>The stopping condition ensures that Q reduces in size (avoiding sudden large reductions in RN size) while the RN set never gets smaller than the P set. More explicitly:</p>
+
+<blockquote>
+<p>while the size of the set of unknowns classified as negatives in <em>this iteration</em> is smaller than or equal to the size of the set of unknowns classified as negatives in <em>the previous iteration</em> and the size of the set of positive classes  is smaller than the set of refined RNs resulting from <em>this iteration</em></p>
+</blockquote>
+
+<h2 id="bagging-approach-inductive-mordelet-vert-2013">Bagging approach (Inductive) (Mordelet &amp; Vert 2013)</h2>
+
+<p>Given a training set containing only positives (P) and unknowns (U), where K = size of bootstrap samples and T = number of samples, follow the following steps:
+1. Draw a bootstrap sample Ut of size K from U
+2. Train a classifier P vs Ut
+3. Repeat steps 1 and 2 T times
+4. Score the test data with an ensemble approach using the bagged models.</p>
+
+<p>The stopping criterion here is determined by the value of T and the authors suggest that there is typically not much additional value to be gained by setting T &gt; 100. Judging from their plots however, where <code>|P|</code> and <code>K</code> are both large, there is little change above T = 5. I suspect it&rsquo;s worth trying to keep track of this during training if possible or setting up an early stopping type criterion in your function because depending on your time constraints as training 100 models may not be viable.</p>
+
+<blockquote>
+<h2 id="things-to-follow-up-on">Things to follow up on:</h2>
+
+<ol>
+<li>Most of the articles use SVM, but they also tend to be NLP problems. Does the classifier family matter much?</li>
+<li>How do the original papers identify the cut-off for determining &lsquo;reliability&rsquo;</li>
+<li>Modified approach: WRT the stopping criterion, why could Q get larger with the iterations?</li>
+<li>Bagging approach: Consider how best to penalise false negatives.
+
+<ul>
+<li>Cutoff selection?</li>
+</ul></li>
+</ol>
+</blockquote>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>These three methods provide sensible approaches to the problem of PU learning but only the modified and bagging approaches provide inherent ways to deal with imbalanced data. My plan is to try and implement these 2 approaches and compare their results. While I cant share the data publicly, I will try and share the code and general results on the blog and in GitHub. We work primarily in Python/PySpark or Scala/Spark. Some nice links:</p>
+
+<ul>
+<li><a href="https://github.com/ispras/pu4spark">https://github.com/ispras/pu4spark</a> PU learning libraries written in Scala/Spark</li>
+<li><a href="https://astrakhantsev.com/pu-learning/">https://astrakhantsev.com/pu-learning/</a> nice post written by author of pu4spark</li>
+<li><a href="https://roywright.me/2017/11/16/positive-unlabeled-learning/">https://roywright.me/2017/11/16/positive-unlabeled-learning/</a> Nice overview of PU learning approaches</li>
+</ul>
+
+<h1 id="references">References</h1>
+
+<p>Fusilier DH, Montes-y-Gómez M, Rosso P, Guzmán Cabrera R (2015) Detecting positive and negative deceptive opinions using PU-learning. Inf Process Manag 51:433–443. doi: 10.1016/j.ipm.2014.11.001</p>
+
+<p>Liu B, Dai Y, Li X, et al (2003) Building text classifiers using positive and unlabeled examples. In: Third IEEE International Conference on Data Mining. pp 179–186</p>
+
+<p>Liu B, Lee WS, Yu PS, Li X (2002) Partially Supervised Classification of Text Documents. In: Proc. 19th Intl. Conf. on Machine Learning. pp 387–394</p>
+
+<p>Mordelet F, Vert J-P (2014) A bagging SVM to learn from positive and unlabeled examples. Pattern Recognit Lett 37:201–209. doi: 10.1016/j.patrec.2013.06.010</p>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/20160804/r_netcdf_cheatsheet/" data-toggle="tooltip" data-placement="top" title="R Netcdf cheatsheet">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/r" title="R">
+                            R
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/ggplot2" title="ggplot2">
+                            ggplot2
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/greyscale" title="greyscale">
+                            greyscale
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/visualisation" title="visualisation">
+                            visualisation
+                        </a>
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://medium.com/@kirshnee.m">Kirshnee Bhagwandas</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Kabelsalat" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:philmassie@webafrica.org.za">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/philmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/philmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@pmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Kabelsalat , 2019
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-24074009-12', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

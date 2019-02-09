@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ggplot2 on Kabelsalat</title>
+    <link>https://philmassie.github.io/tags/ggplot2/</link>
+    <description>Recent content in ggplot2 on Kabelsalat</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 30 Jun 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://philmassie.github.io/tags/ggplot2/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Windrose Plots</title>
+      <link>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</link>
+      <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</guid>
+      <description>Style for changing title colour depending on photo  div.post-heading h1, div.post-heading h2, div.post-heading span.meta { color: midnightblue; }  Introduction This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.</description>
+    </item>
+    
+    <item>
+      <title>Greyscale Contour Plots</title>
+      <link>https://philmassie.github.io/post/20160622/ggplot2_contours/</link>
+      <pubDate>Wed, 22 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://philmassie.github.io/post/20160622/ggplot2_contours/</guid>
+      <description>Introduction Preparing figures for publication can take a long time (well it does for me anyway), and I relied very heavily on numerous online resources to figure out some of the dos and don&amp;rsquo;ts. Obviously I owe massive thanks to the hundreds of blogs and Stack Exchange questions and answers I relied on. Where I can, I will try to link to them.
+Additionally, this tutorial covers a little bit about working with reshaped gridded data, shape files, GeoTIFF data and even a simple homemade polygon.</description>
+    </item>
+    
+  </channel>
+</rss>

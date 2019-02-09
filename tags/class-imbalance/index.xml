@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>class imbalance on Kabelsalat</title>
+    <link>https://philmassie.github.io/tags/class-imbalance/</link>
+    <description>Recent content in class imbalance on Kabelsalat</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 11 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://philmassie.github.io/tags/class-imbalance/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>PU Learning</title>
+      <link>https://philmassie.github.io/post/20190111/pu_learning/</link>
+      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://philmassie.github.io/post/20190111/pu_learning/</guid>
+      <description>Introduction A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly imbalanced data sets and pressed for time, I have often taken the simplistic route of sub-sampling the unknown set and treating them as unknowns. Obviously this isn&amp;rsquo;t ideal as the unknown set is contaminated and as a result the classifiers dont train that well.</description>
+    </item>
+    
+  </channel>
+</rss>

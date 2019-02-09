@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Kabelsalat">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://philmassie.github.io//img/201402_tankwa_099_IMG_6752.jpg">
+    <meta property="twitter:image" content="https://philmassie.github.io//img/201402_tankwa_099_IMG_6752.jpg" />
+    
+
+    
+    <meta name="title" content="Windrose Plots" />
+    <meta property="og:title" content="Windrose Plots" />
+    <meta property="twitter:title" content="Windrose Plots" />
+    
+
+    
+    <meta name="description" content="A small blog site, mainly data science, rarely updated.">
+    <meta property="og:description" content="A small blog site, mainly data science, rarely updated." />
+    <meta property="twitter:description" content="A small blog site, mainly data science, rarely updated." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="data science, predictive analytics, machine learning, visualisation, photography, spark, python, R, scala">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Windrose Plots-Kabelsalat | Phil Massie&#39;s blog</title>
+
+    <link rel="canonical" href="/post/20160630/ggplot2_wind_rose/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+	
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Kabelsalat</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+		    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/post/20160630/ggplot2_wind_rose/img_1169.jpg')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/r" title="R">
+                            R
+                        </a>
+                        
+                        <a class="tag" href="/tags/ggplot2" title="ggplot2">
+                            ggplot2
+                        </a>
+                        
+                        <a class="tag" href="/tags/wind-rose" title="wind rose">
+                            wind rose
+                        </a>
+                        
+                        <a class="tag" href="/tags/visualisation" title="visualisation">
+                            visualisation
+                        </a>
+                        
+                        <a class="tag" href="/tags/greyscale" title="greyscale">
+                            greyscale
+                        </a>
+                        
+                    </div>
+                    <h1>Windrose Plots</h1>
+                    <h2 class="subheading">Plotting a windrose in R with ggplot2</h2>
+                    <span class="meta">
+			Posted by 
+			
+			    Philip Massie
+			 
+			on 
+			Thursday, June 30, 2016
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li><a href="#style-for-changing-title-colour-depending-on-photo">Style for changing title colour depending on photo</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-data">The data</a></li>
+<li><a href="#method">Method</a></li>
+<li><a href="#plotting">Plotting</a>
+<ul>
+<li><a href="#theming">Theming</a></li>
+<li><a href="#now-the-main-plot">Now the main plot&hellip;</a></li>
+</ul></li>
+</ul>
+</nav>
+                
+                
+
+<h1 id="style-for-changing-title-colour-depending-on-photo">Style for changing title colour depending on photo</h1>
+
+<style>
+   div.post-heading h1, 
+   div.post-heading h2, 
+   div.post-heading span.meta {
+    color: midnightblue;
+  }
+</style>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.</p>
+
+<p>In my article I wanted a graphic which illustrated the preferred outward post-moult migration direction of adult female southern elephant seals from Marion Island. In reality it doesn&rsquo;t matter too much what you want to plot, and these sorts of plots are more generally used for wind direction illustrations. Really, they are like radial histograms. In fact, if you look through the ggplot2 call, it is basically a histogram until the last couple of lines, where it is wrapped into a wind rose.</p>
+
+<h1 id="the-data">The data</h1>
+
+<p>As I mentioned, my data was related to seal swimming directions, gathered from satellite tags. For this tutorial I will simulate 100000 directions using the wrapped normal function (rwrpnorm) from the CircStats package.</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>ggplot2<span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>CircStats<span class="p">)</span>
+
+<span class="kp">set.seed</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+data <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>direction <span class="o">=</span> deg<span class="p">(</span>rwrpnorm<span class="p">(</span><span class="m">100000</span><span class="p">,</span> rad<span class="p">(</span><span class="m">225</span><span class="p">),</span> rho<span class="o">=</span><span class="m">0.8</span><span class="p">,</span> sd<span class="o">=</span><span class="m">1</span><span class="p">)))</span>
+
+<span class="c1"># Take a quick look...</span>
+hist<span class="p">(</span>data<span class="o">$</span>direction<span class="p">,</span> main <span class="o">=</span> <span class="s">&#34;Histogram of hypothetical direction frequencies.&#34;</span><span class="p">,</span> xlab <span class="o">=</span> <span class="s">&#34;Direction&#34;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&#34;Frequency&#34;</span><span class="p">)</span></code></pre></div>
+<p><img src="coloured_plot-1.png" alt="" /><!-- -->
+<img src="histo-1.png" alt="" /><!-- --></p>
+
+<p>That looks like a reasonable distribution of directions, favouring 225°.</p>
+
+<h1 id="method">Method</h1>
+
+<p>There are various ways to split and plot these data. Some searching lead me <a href="http://stackoverflow.com/questions/17266780/wind-rose-with-ggplot-r">to this one</a>. First we will define the bin width (30°), then we will define dir.breaks which stores the range of each bin as follows 345°-15°, 15°-45°, 45°-75° etc.</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># choose bin size (degrees/bin)</span>
+deg <span class="o">&lt;-</span> <span class="m">30</span> 
+<span class="c1"># define the range of each bin</span>
+dir.breaks <span class="o">&lt;-</span> <span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="o">-</span><span class="p">(</span>deg<span class="o">/</span><span class="m">2</span><span class="p">),</span> <span class="m">360</span><span class="o">+</span><span class="p">(</span>deg<span class="o">/</span><span class="m">2</span><span class="p">),</span> deg<span class="p">)</span></code></pre></div>
+<p>Now we generate a factor variable, exchanging the directions with the ranges. We&rsquo;ll also generate some pretty labels and assign them as levels of the new object. Finally we&rsquo;ll attach the new variable to the main dataset.</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># assign each direction to a bin range</span>
+dir.binned <span class="o">&lt;-</span> <span class="kp">cut</span><span class="p">(</span>data<span class="o">$</span>direction<span class="p">,</span>
+                       breaks <span class="o">=</span> dir.breaks<span class="p">,</span>
+                       ordered_result <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+<span class="c1"># generate pretty lables</span>
+dir.labels <span class="o">&lt;-</span> <span class="kp">as.character</span><span class="p">(</span><span class="kt">c</span><span class="p">(</span><span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">360</span><span class="o">-</span>deg<span class="p">,</span> by <span class="o">=</span> deg<span class="p">),</span> <span class="m">0</span><span class="p">))</span>
+<span class="c1"># replace ranges with pretty bin lables</span>
+<span class="kp">levels</span><span class="p">(</span>dir.binned<span class="p">)</span> <span class="o">&lt;-</span> dir.labels
+<span class="c1"># Assign bin names to the original data set</span>
+data<span class="o">$</span>dir.binned <span class="o">&lt;-</span> dir.binned</code></pre></div>
+<h1 id="plotting">Plotting</h1>
+
+<h2 id="theming">Theming</h2>
+
+<p>The important points here are blank values for <code>panel.border</code> and <code>panel.grid</code>. This turns off the default background for ggplot2 so that we can define the borders and grids manually later.</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r">thm <span class="o">&lt;-</span> theme_bw<span class="p">()</span> <span class="o">+</span> 
+    theme<span class="p">(</span>axis.text.x <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
+          axis.text.y <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
+          axis.title.x <span class="o">=</span> element_blank<span class="p">(),</span>
+          axis.title.y <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">,</span> hjust <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> vjust <span class="o">=</span> <span class="m">1.3</span><span class="p">),</span>
+          panel.border <span class="o">=</span> element_blank<span class="p">(),</span>
+          panel.grid  <span class="o">=</span> element_blank<span class="p">())</span></code></pre></div>
+<h2 id="now-the-main-plot">Now the main plot&hellip;</h2>
+
+<p>The main plot sets things up quite specifically. What we need to know before going on is the frequency of the most common bin.</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="kp">summary</span><span class="p">(</span>dir.binned<span class="p">)</span></code></pre></div>
+<pre><code>##     0    30    60    90   120   150   180   210   240   270   300   330 
+##    79     1     5    83   884  4993 15875 28134 28403 15751  4926   866
+</code></pre>
+
+<p>So there are 28403 counts of the 240° bin. We need this value to set our y-scales correctly. Our y-axis will have breaks every 5000 counts so we&rsquo;ll use 30000 as the max for the y-axis. The first parts of this plot will plot a rectangular histogram, only the <code>coord_polar</code> function wraps it into a wind rose.</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># initialise the plot</span>
+plt.dirrose <span class="o">&lt;-</span> ggplot<span class="p">()</span> <span class="o">+</span>
+    <span class="c1"># since the plot background is blank we&#39;ll add a series of horizontal lines, at 5000 count intervals, up to 25000.</span>
+    geom_hline<span class="p">(</span>yintercept <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">25000</span><span class="p">,</span> by <span class="o">=</span> <span class="m">5000</span><span class="p">),</span> colour <span class="o">=</span> <span class="s">&#34;grey60&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="c1"># Now we add a darker horizontal line as the top border at 30000.</span>
+    geom_hline<span class="p">(</span>yintercept <span class="o">=</span> <span class="m">30000</span><span class="p">,</span> colour <span class="o">=</span> <span class="s">&#34;black&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="c1"># We want 12 vertical lines representing the centers of the 30° ranges.</span>
+    geom_vline<span class="p">(</span>xintercept <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="kp">seq</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">12</span><span class="p">,</span><span class="m">1</span><span class="p">)),</span> colour <span class="o">=</span> <span class="s">&#34;grey60&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="c1"># On top of everything we place the histogram bars.</span>
+    geom_bar<span class="p">(</span>data <span class="o">=</span> data<span class="p">,</span> aes<span class="p">(</span>x <span class="o">=</span> dir.binned<span class="p">),</span> width <span class="o">=</span> <span class="m">1</span><span class="p">,</span> colour<span class="o">=</span><span class="s">&#34;black&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span> alpha<span class="o">=</span><span class="m">0.5</span><span class="p">)</span> <span class="o">+</span> 
+    <span class="c1"># Add the x-axis labels</span>
+    scale_x_discrete<span class="p">(</span> drop <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> labels <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="m">90</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="m">180</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="m">270</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">))</span> <span class="o">+</span>
+    <span class="c1"># Add the y-axis labels</span>
+    scale_y_continuous<span class="p">(</span>limits <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">30000</span><span class="p">),</span> expand <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">),</span> 
+                       breaks <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">5000</span><span class="p">,</span> <span class="m">10000</span><span class="p">,</span> <span class="m">15000</span><span class="p">,</span> <span class="m">20000</span><span class="p">,</span> <span class="m">25000</span><span class="p">,</span> <span class="m">30000</span><span class="p">),</span> 
+                       labels <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">15</span><span class="p">,</span> <span class="m">20</span><span class="p">,</span> <span class="m">25</span><span class="p">,</span> <span class="m">30</span><span class="p">))</span> <span class="o">+</span>
+    <span class="c1"># Add the axis titles</span>
+    labs<span class="p">(</span>x <span class="o">=</span> <span class="s">&#39;Outward step bearing (°)&#39;</span><span class="p">,</span> y <span class="o">=</span> <span class="s">&#39;Count of outward steps (x10³)&#39;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="c1"># If you only use the plot code up till here you will get a histogram.</span>
+    <span class="c1"># the next line wraps the histogram into a windrose</span>
+    coord_polar<span class="p">(</span>start <span class="o">=</span> <span class="o">-</span><span class="p">(</span>deg<span class="o">/</span><span class="m">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="kc">pi</span><span class="o">/</span><span class="m">180</span><span class="p">))</span> <span class="o">+</span>
+    <span class="c1"># apply theme</span>
+    thm
+
+plt.dirrose</code></pre></div>
+<p><img src="coloured_plot-1.png" alt="" /><!-- -->
+<img src="rose-1.png" alt="" /><!-- --></p>
+
+<p>There we have it; a wind rose, in grey scale illustrating our data exactly as we need it to.</p>
+
+<p><strong><em>Saving the plot according to the publishers requirements</em></strong></p>
+
+<p>For completeness, this is one approach to saving your plots</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r">ggsave<span class="p">(</span>filename <span class="o">=</span> <span class="s">&#39;plt.dirrose.png&#39;</span><span class="p">,</span> plot <span class="o">=</span> plt.dirrose<span class="p">,</span> width <span class="o">=</span> <span class="m">84</span><span class="p">,</span> height <span class="o">=</span> <span class="m">84</span><span class="p">,</span> units<span class="o">=</span><span class="s">&#34;mm&#34;</span><span class="p">,</span> dpi <span class="o">=</span> <span class="m">300</span><span class="p">,</span> type<span class="o">=</span><span class="s">&#34;cairo-png&#34;</span><span class="p">)</span></code></pre></div>
+<p>Hope this helps :)</p>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/20160622/ggplot2_contours/" data-toggle="tooltip" data-placement="top" title="Greyscale Contour Plots">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/20160714/election_effort/" data-toggle="tooltip" data-placement="top" title="South African municipal elections 2016">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/r" title="R">
+                            R
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/ggplot2" title="ggplot2">
+                            ggplot2
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/greyscale" title="greyscale">
+                            greyscale
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/visualisation" title="visualisation">
+                            visualisation
+                        </a>
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://medium.com/@kirshnee.m">Kirshnee Bhagwandas</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Kabelsalat" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:philmassie@webafrica.org.za">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/philmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/philmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@pmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Kabelsalat , 2016
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-24074009-12', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

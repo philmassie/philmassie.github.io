@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cheatsheet on Kabelsalat</title>
+    <link>https://philmassie.github.io/tags/cheatsheet/</link>
+    <description>Recent content in cheatsheet on Kabelsalat</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 04 Aug 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://philmassie.github.io/tags/cheatsheet/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>R Netcdf cheatsheet</title>
+      <link>https://philmassie.github.io/post/20160804/r_netcdf_cheatsheet/</link>
+      <pubDate>Thu, 04 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://philmassie.github.io/post/20160804/r_netcdf_cheatsheet/</guid>
+      <description>Introduction I recently promised a &amp;ldquo;NetCDF in R&amp;rdquo; cheat sheet to a friend, and I thought it might make a useful tutorial. NetCDF files are often used to distribute gridded, multidimensional spatial data such as sea surface temperature, chlorophyll-a levels and so on. NetCDF is more than just a file format, and so googling it can be a little intimidating. I hope this helps make these files a little easier to use in R.</description>
+    </item>
+    
+  </channel>
+</rss>

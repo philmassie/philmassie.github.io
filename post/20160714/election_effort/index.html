@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Kabelsalat">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://philmassie.github.io//img/201402_tankwa_099_IMG_6752.jpg">
+    <meta property="twitter:image" content="https://philmassie.github.io//img/201402_tankwa_099_IMG_6752.jpg" />
+    
+
+    
+    <meta name="title" content="South African municipal elections 2016" />
+    <meta property="og:title" content="South African municipal elections 2016" />
+    <meta property="twitter:title" content="South African municipal elections 2016" />
+    
+
+    
+    <meta name="description" content="A small blog site, mainly data science, rarely updated.">
+    <meta property="og:description" content="A small blog site, mainly data science, rarely updated." />
+    <meta property="twitter:description" content="A small blog site, mainly data science, rarely updated." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="data science, predictive analytics, machine learning, visualisation, photography, spark, python, R, scala">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>South African municipal elections 2016-Kabelsalat | Phil Massie&#39;s blog</title>
+
+    <link rel="canonical" href="/post/20160714/election_effort/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+	
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Kabelsalat</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+		    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/post/20160714/election_effort/20160227_164239_harold_porter_bbay.jpg')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/r" title="R">
+                            R
+                        </a>
+                        
+                        <a class="tag" href="/tags/d3" title="D3">
+                            D3
+                        </a>
+                        
+                        <a class="tag" href="/tags/maps" title="Maps">
+                            Maps
+                        </a>
+                        
+                        <a class="tag" href="/tags/visualisation" title="visualisation">
+                            visualisation
+                        </a>
+                        
+                        <a class="tag" href="/tags/south-africa" title="South Africa">
+                            South Africa
+                        </a>
+                        
+                        <a class="tag" href="/tags/election-2016" title="Election 2016">
+                            Election 2016
+                        </a>
+                        
+                    </div>
+                    <h1>South African municipal elections 2016</h1>
+                    <h2 class="subheading">A visual comparison of party effort across municipalities / districts</h2>
+                    <span class="meta">
+			Posted by 
+			
+			    Philip Massie
+			 
+			on 
+			Thursday, July 14, 2016
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#data-sources">Data sources</a></li>
+<li><a href="#r-data-processing">R data processing</a></li>
+</ul>
+</nav>
+                
+                
+
+<h1 id="introduction">Introduction</h1>
+
+<p>With South Africa&rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.</p>
+
+<p>Employing and promoting candidates costs money. Assuming that our political parties don&rsquo;t have infinite financial resources it follows that investigating where they invest their resources may be a reasonable proxy for effort. Furthermore, looking at the change in effort adds a temporal dimension, suggesting where effort has increased or decreased between the elections.</p>
+
+<p>The map below shows the change in PR candidate representation by each party across the county. If you hover your mouse pointer over a district, you can see by how much the representation has changed in terms of two metrics:</p>
+
+<p><strong>Relative change</strong>: The change in representation as a proportion of all representatives. E.g. In 2011 parties A and B each had 50% of a district&rsquo;s PR candidates. In 2016 party A has 60% and party B has 40%. Party A&rsquo;s relative change is 10% and party B&rsquo;s is -10%.</p>
+
+<p><strong>Absolute change</strong>: The change in actual number of PR candidates in a party from 2011 to 2016.</p>
+
+<p>Scroll below the map for more info regarding data sources and methods.</p>
+
+<p><em>Disclaimer: As I said though, I am no political scientist and so maybe this is all nonsense.</em></p>
+
+<iframe width="100%" height="800px" src="https://philmassie.github.io/election_effort_d3/za_election_effort_2016.html" scrolling = "no" frameborder="0" seamless name="iframe-election-content" id="iframe-election-content">
+<p>Your browser does not support iframes. Click <a href="https://philmassie.github.io/election_effort_d3/">here</a> to navigate to the content.</p>
+</iframe>
+
+<p>Embed this map using the following iframe code:</p>
+
+<pre><code>&lt;iframe width=&quot;100%&quot; height=&quot;660px&quot; src=&quot;https://philmassie.github.io/election_effort_d3/za_election_effort_2016.html&quot; scrolling = &quot;no&quot; frameborder=&quot;0&quot; seamless name=&quot;iframe-election-content&quot; id=&quot;iframe-election-content&quot;&gt;
+&lt;p&gt;Your browser does not support iframes. Click &lt;a href=&quot;https://philmassie.github.io/election_effort_d3/&quot;&gt;here&lt;/a&gt; to navigate to the content.&lt;/p&gt;
+&lt;/iframe&gt;
+</code></pre>
+
+<h1 id="data-sources">Data sources</h1>
+
+<p>The <a href="http://www.elections.org.za">Independent Electoral Commission</a> have published the <a href="http://www.elections.org.za/content/Elections/Candidates-lists/">2016 candidate lists</a> as pdf documents. The good people at <a href="https://africaopendata.org/">openAfrica</a> have already gone to the trouble of <a href="https://africaopendata.org/dataset/electoral-candidates-2016">processing these pdfs</a> (which can be a bit painful) so I used their lists instead. openAfrica also host the <a href="https://africaopendata.org/dataset/electoral-commission-of-south-africa-local-government-election-candidates">2011</a> candidate lists. After learning a little more about the electoral system, it seemed that the proportional representative candidates would be the interesting group to look at.</p>
+
+<p>The <a href="http://www.demarcation.org.za/">Municipal Demarcation Board</a> website hosts shape files for South Africa&rsquo;s <a href="http://www.demarcation.org.za/index.php/downloads/boundary-data/boundary-data-main-files/districts">districts</a> and <a href="http://www.demarcation.org.za/index.php/downloads/boundary-data/boundary-data-main-files/province">provinces</a>.</p>
+
+<h1 id="r-data-processing">R data processing</h1>
+
+<p>Some simple wrangling in R (scroll down for the process) exposed the list of district codes which I joined with the appropriate candidate lists from each election year. From there I produced a list of parties, ordered by the total number of district or municipal representatives. The Economic Freedom Fighters lead this list with a total of 1501 candidates, 106 more than the African National Congress and 139 more than the Democratic Alliance. These are the three largest parties which is why I mention them. I chose to load the map with ANC data because the EFF didn&rsquo;t exist during the 2011 elections and so they&rsquo;ve not decreased in any provinces. I believe that a few candidates have withdrawn from the elections. I&rsquo;m not sure who they were but I doubt their withdrawal would make any substantive change to this analysis.</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1">## Libraries</span>
+<span class="kn">library</span><span class="p">(</span>rgdal<span class="p">)</span> <span class="c1">#</span>
+<span class="kn">library</span><span class="p">(</span>xlsx<span class="p">)</span> <span class="c1">#</span>
+<span class="kn">library</span><span class="p">(</span>plyr<span class="p">)</span><span class="c1">#</span>
+<span class="kn">library</span><span class="p">(</span>stringr<span class="p">)</span><span class="c1">#</span>
+<span class="kn">library</span><span class="p">(</span>dplyr<span class="p">)</span> <span class="c1">#</span>
+<span class="kp">setwd</span><span class="p">(</span><span class="s">&#34;D:/My Folders/R/2016/blog/20160714_election_effort&#34;</span><span class="p">)</span></code></pre></div><div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># Load the district shape file to get a list of district codes</span>
+za.districts <span class="o">&lt;-</span> readOGR<span class="p">(</span><span class="s">&#34;Districts&#34;</span><span class="p">,</span> layer<span class="o">=</span><span class="s">&#34;DistrictMunicipalities2011&#34;</span><span class="p">)</span>
+za.district.list <span class="o">&lt;-</span> <span class="kp">unique</span><span class="p">(</span>za.districts<span class="o">@</span>data<span class="o">$</span>DISTRICT<span class="p">)</span>
+<span class="kp">rm</span><span class="p">(</span>za.districts<span class="p">)</span></code></pre></div><div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># load and process electoral candidate data</span>
+<span class="c1"># 2011 Proportional Representative candidates</span>
+pr.cand.2011 <span class="o">&lt;-</span> read.xlsx2<span class="p">(</span><span class="s">&#34;data/2011-pr-candidate-lists.xls&#34;</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> startRow <span class="o">=</span> <span class="m">3</span><span class="p">)</span>
+<span class="c1"># A few minor edits to party names</span>
+pr.cand.2011<span class="o">$</span>Party <span class="o">&lt;-</span> str_to_title<span class="p">(</span>str_replace_all<span class="p">(</span>pr.cand.2011<span class="o">$</span>Party<span class="p">,</span> <span class="s">&#34;  &#34;</span><span class="p">,</span> <span class="s">&#34; &#34;</span><span class="p">))</span>
+pr.cand.2011<span class="o">$</span>Party<span class="p">[</span>pr.cand.2011<span class="o">$</span>Party <span class="o">==</span> <span class="s">&#34;Democratic Alliance/Demokratiese Alliansie&#34;</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&#34;Democratic Alliance&#34;</span>
+pr.cand.2011<span class="o">$</span>Party<span class="p">[</span>pr.cand.2011<span class="o">$</span>Party <span class="o">==</span> <span class="s">&#34;Independent Ratepayers Association Of Sa&#34;</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&#34;Independent Ratepayers Association Of SA&#34;</span>
+pr.cand.2011<span class="o">$</span>Party<span class="p">[</span>pr.cand.2011<span class="o">$</span>Party <span class="o">==</span> <span class="s">&#34;South African Maintanance And Estate Beneficiaries Associati&#34;</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&#34;South African Maintanance And Estate Beneficiaries Association&#34;</span></code></pre></div><div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># 2016 ward &amp; proportional Representative candidates were in the same data set</span>
+ward.pr.cand.2016 <span class="o">&lt;-</span> read.csv<span class="p">(</span><span class="s">&#34;data/Electoral_Candidates_2016.csv&#34;</span><span class="p">)</span>
+<span class="c1"># A few minor edits to party names</span>
+ward.pr.cand.2016<span class="o">$</span>Party <span class="o">&lt;-</span> str_to_title<span class="p">(</span>str_replace_all<span class="p">(</span>ward.pr.cand.2016<span class="o">$</span>Party<span class="p">,</span> <span class="s">&#34;  &#34;</span><span class="p">,</span> <span class="s">&#34; &#34;</span><span class="p">))</span>
+ward.pr.cand.2016<span class="o">$</span>Party<span class="p">[</span>ward.pr.cand.2016<span class="o">$</span>Party <span class="o">==</span> <span class="s">&#34;Independent Ratepayers Association Of Sa&#34;</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&#34;Independent Ratepayers Association Of SA&#34;</span>
+ward.pr.cand.2016<span class="o">$</span>Party<span class="p">[</span>ward.pr.cand.2016<span class="o">$</span>Party <span class="o">==</span> <span class="s">&#34;South African Maintanance And Estate Beneficiaries Associati&#34;</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&#34;South African Maintanance And Estate Beneficiaries Association&#34;</span>
+
+<span class="c1"># A number of the 2016 district codes had a wierd &#34;\f&#34; prefix.</span>
+<span class="c1"># I consulted the original IEC data,confirmed that these were errors, and tidied them up.</span>
+err_index <span class="o">&lt;-</span> <span class="kp">grep</span><span class="p">(</span><span class="s">&#34;\f&#34;</span><span class="p">,</span> ward.pr.cand.2016<span class="o">$</span>Municipality<span class="p">)</span>
+ward.pr.cand.2016<span class="o">$</span>Municipality<span class="p">[</span>err_index<span class="p">]</span> <span class="o">&lt;-</span> str_replace<span class="p">(</span>ward.pr.cand.2016<span class="o">$</span>Municipality<span class="p">[</span>err_index<span class="p">],</span> <span class="s">&#34;\f&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
+ward.pr.cand.2016 <span class="o">&lt;-</span> <span class="kp">droplevels</span><span class="p">(</span>ward.pr.cand.2016<span class="p">)</span>
+
+<span class="c1">#### Split the data into ward and pr data</span>
+<span class="c1"># change variable names so they match later</span>
+pr.cand.2016 <span class="o">&lt;-</span> <span class="kp">subset</span><span class="p">(</span>ward.pr.cand.2016<span class="p">,</span> ward.pr.cand.2016<span class="o">$</span>PR.List.OrderNo...Ward.No <span class="o">&lt;</span> <span class="m">1000</span><span class="p">)</span>
+<span class="kp">names</span><span class="p">(</span>pr.cand.2016<span class="p">)[</span><span class="m">4</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&#34;list.order.no&#34;</span></code></pre></div><div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1">#### Process ward and PR data</span>
+processor <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>df<span class="p">){</span>
+    <span class="c1"># get the variable name of passed data</span>
+    data.name <span class="o">&lt;-</span> <span class="p">(</span><span class="kp">deparse</span><span class="p">(</span><span class="kp">substitute</span><span class="p">(</span>df<span class="p">)))</span>
+    <span class="c1"># split the municipality names into codes and names</span>
+    dist.split <span class="o">&lt;-</span> str_split_fixed<span class="p">(</span>df<span class="o">$</span>Municipality<span class="p">,</span> <span class="s">&#34; - &#34;</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>
+    df<span class="o">$</span>dist.code <span class="o">&lt;-</span> dist.split<span class="p">[,</span><span class="m">1</span><span class="p">]</span>
+    df<span class="o">$</span>dist.name <span class="o">&lt;-</span> dist.split<span class="p">[,</span><span class="m">2</span><span class="p">]</span>
+    <span class="c1"># Keep only the district values from the shape file. Main centers and DC areas.</span>
+    df <span class="o">&lt;-</span> df<span class="p">[</span>df<span class="o">$</span>dist.code <span class="o">%in%</span> za.district.list<span class="p">,</span> <span class="p">]</span>
+    <span class="c1"># split data by district and party, counting how many candidates per party per district</span>
+    df.long <span class="o">&lt;-</span> ddply<span class="p">(</span>df<span class="p">,</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#34;dist.code&#34;</span><span class="p">,</span> <span class="s">&#34;Party&#34;</span><span class="p">),</span> <span class="kr">function</span><span class="p">(</span>df<span class="p">)</span> <span class="kp">nrow</span><span class="p">(</span>df<span class="p">))</span>
+    <span class="c1"># temp naming - to keep track not NB</span>
+    <span class="kp">names</span><span class="p">(</span>df.long<span class="p">)[</span><span class="m">3</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&#34;num&#34;</span>
+    <span class="c1"># split new data by district, summing tot candidates from all parties (in district)</span>
+    df.tot <span class="o">&lt;-</span> ddply<span class="p">(</span>df.long<span class="p">,</span> <span class="s">&#34;dist.code&#34;</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span>df<span class="p">)</span> <span class="kp">sum</span><span class="p">(</span>df<span class="o">$</span>num<span class="p">))</span>
+    <span class="c1"># join tot numbers by district to main data</span>
+    df.long <span class="o">&lt;-</span> join<span class="p">(</span>df.long<span class="p">,</span> df.tot<span class="p">,</span> by <span class="o">=</span> <span class="s">&#34;dist.code&#34;</span><span class="p">)</span>
+    <span class="c1"># temp naming - to keep track not NB</span>
+    <span class="kp">names</span><span class="p">(</span>df.long<span class="p">)[</span><span class="m">4</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&#34;tot&#34;</span>
+    <span class="c1"># calculate the proportion of each party to total, for each district</span>
+    df.long<span class="o">$</span>prop <span class="o">&lt;-</span> df.long<span class="o">$</span>num <span class="o">/</span> df.long<span class="o">$</span>tot
+    <span class="c1"># quick srting, not v NB</span>
+    df.long <span class="o">&lt;-</span> arrange<span class="p">(</span>df.long<span class="p">,</span> dist.code<span class="p">,</span> <span class="o">-</span>prop<span class="p">)</span>
+    <span class="c1"># renaming based on variable name</span>
+    <span class="kp">names</span><span class="p">(</span>df.long<span class="p">)[</span><span class="kt">c</span><span class="p">(</span><span class="m">3</span><span class="o">:</span><span class="m">5</span><span class="p">)]</span> <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span><span class="kp">paste0</span><span class="p">(</span>data.name<span class="p">,</span> <span class="s">&#34;.num&#34;</span><span class="p">),</span> <span class="kp">paste0</span><span class="p">(</span>data.name<span class="p">,</span> <span class="s">&#34;.tot&#34;</span><span class="p">),</span> <span class="kp">paste0</span><span class="p">(</span>data.name<span class="p">,</span> <span class="s">&#34;.prop&#34;</span><span class="p">))</span>
+    <span class="kr">return</span><span class="p">(</span>df.long<span class="p">)</span>
+<span class="p">}</span>
+pr.cand.2011.long <span class="o">&lt;-</span> processor<span class="p">(</span>pr.cand.2011<span class="p">)</span>
+pr.cand.2016.long <span class="o">&lt;-</span> processor<span class="p">(</span>pr.cand.2016<span class="p">)</span>
+
+<span class="c1"># Join data, dropping parties that no longer exist</span>
+pr.cand <span class="o">&lt;-</span> join<span class="p">(</span>pr.cand.2011.long<span class="p">,</span> pr.cand.2016.long<span class="p">,</span> by <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#34;dist.code&#34;</span><span class="p">,</span> <span class="s">&#34;Party&#34;</span><span class="p">),</span> type <span class="o">=</span> <span class="s">&#34;right&#34;</span><span class="p">)</span>
+
+<span class="c1"># replace NAs with zero for parties new in 2016</span>
+pr.cand<span class="p">[</span><span class="kp">is.na</span><span class="p">(</span>pr.cand<span class="p">)]</span> <span class="o">&lt;-</span> <span class="m">0</span>
+
+<span class="c1"># calculate relative and absolute change</span>
+pr.cand<span class="o">$</span>rel <span class="o">&lt;-</span> pr.cand<span class="o">$</span>pr.cand.2016.prop <span class="o">-</span> pr.cand<span class="o">$</span>pr.cand.2011.prop
+pr.cand<span class="o">$</span>abs <span class="o">&lt;-</span> pr.cand<span class="o">$</span>pr.cand.2016.num <span class="o">-</span> pr.cand<span class="o">$</span>pr.cand.2011.num</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># generate data for d3 map</span>
+<span class="c1"># full data list</span>
+d3_data_all <span class="o">&lt;-</span> pr.cand<span class="p">[,</span> <span class="kt">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="m">10</span><span class="p">)]</span>
+<span class="kp">names</span><span class="p">(</span>d3_data_all<span class="p">)</span> <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#34;dist_code&#34;</span><span class="p">,</span> <span class="s">&#34;party&#34;</span><span class="p">,</span> <span class="s">&#34;Relative Change&#34;</span><span class="p">,</span> <span class="s">&#34;Absolute Change&#34;</span><span class="p">)</span>
+write.csv<span class="p">(</span>d3_data_all<span class="p">,</span> file<span class="o">=</span><span class="s">&#34;data_d3/d3_data_all.csv&#34;</span><span class="p">,</span> row.names <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> quote <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+
+<span class="c1"># Party data list, ordered by total number or district PR candidates</span>
+<span class="c1"># group the data by Party</span>
+grouped <span class="o">&lt;-</span> group_by<span class="p">(</span>pr.cand<span class="p">,</span> Party<span class="p">)</span>
+<span class="c1"># Summarise by summing the total candidates per party, excluding zeros and sorting</span>
+d3_party_list <span class="o">&lt;-</span> summarise<span class="p">(</span>grouped<span class="p">,</span> tot <span class="o">=</span> <span class="kp">sum</span><span class="p">(</span>pr.cand.2016.num<span class="p">))</span>
+d3_party_list <span class="o">&lt;-</span> d3_party_list<span class="p">[</span>d3_party_list<span class="o">$</span>tot <span class="o">&gt;</span> <span class="m">0</span><span class="p">,</span> <span class="p">]</span>
+d3_party_list <span class="o">&lt;-</span> arrange<span class="p">(</span>d3_party_list<span class="p">,</span> <span class="o">-</span>tot<span class="p">)</span>
+<span class="c1"># now we only need the party list</span>
+d3_party_list <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>party <span class="o">=</span> d3_party_list<span class="o">$</span>Party<span class="p">)</span>
+
+write.csv<span class="p">(</span>d3_party_list<span class="p">,</span> file<span class="o">=</span><span class="s">&#34;data_d3/d3_party_list.csv&#34;</span><span class="p">,</span> row.names <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> quote <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span></code></pre></div>
+<p>The map was build with JavaScript and the mighty D3 libraries. The source is in my github repo <a href="https://github.com/philmassie/election_effort_d3">here</a></p>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/20160630/ggplot2_wind_rose/" data-toggle="tooltip" data-placement="top" title="Windrose Plots">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/20160804/r_netcdf_cheatsheet/" data-toggle="tooltip" data-placement="top" title="R Netcdf cheatsheet">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/r" title="R">
+                            R
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/ggplot2" title="ggplot2">
+                            ggplot2
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/greyscale" title="greyscale">
+                            greyscale
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/visualisation" title="visualisation">
+                            visualisation
+                        </a>
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://medium.com/@kirshnee.m">Kirshnee Bhagwandas</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Kabelsalat" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:philmassie@webafrica.org.za">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/philmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/philmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@pmassie">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Kabelsalat , 2016
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-24074009-12', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

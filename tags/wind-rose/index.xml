@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>wind rose on Kabelsalat</title>
+    <link>https://philmassie.github.io/tags/wind-rose/</link>
+    <description>Recent content in wind rose on Kabelsalat</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 30 Jun 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://philmassie.github.io/tags/wind-rose/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Windrose Plots</title>
+      <link>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</link>
+      <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</guid>
+      <description>Style for changing title colour depending on photo  div.post-heading h1, div.post-heading h2, div.post-heading span.meta { color: midnightblue; }  Introduction This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.</description>
+    </item>
+    
+  </channel>
+</rss>

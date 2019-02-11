@@ -8,7 +8,7 @@
     <language>en-us</language>
     <lastBuildDate>Thu, 04 Aug 2016 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://philmassie.github.io/tags/cheatsheet/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="https://philmassie.github.io/tags/cheatsheet/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -17,7 +17,194 @@
       <pubDate>Thu, 04 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20160804/r_netcdf_cheatsheet/</guid>
-      <description>Introduction I recently promised a &amp;ldquo;NetCDF in R&amp;rdquo; cheat sheet to a friend, and I thought it might make a useful tutorial. NetCDF files are often used to distribute gridded, multidimensional spatial data such as sea surface temperature, chlorophyll-a levels and so on. NetCDF is more than just a file format, and so googling it can be a little intimidating. I hope this helps make these files a little easier to use in R.</description>
+      <description>
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;I recently promised a &amp;ldquo;NetCDF in R&amp;rdquo; cheat sheet to a friend, and I thought it might make a useful tutorial. NetCDF files are often used to distribute gridded, multidimensional spatial data such as sea surface temperature, chlorophyll-a levels and so on. NetCDF is more than just a file format, and so googling it can be a little intimidating. I hope this helps make these files a little easier to use in R.&lt;/p&gt;
+
+&lt;p&gt;A full specification for NetCDF can be found &lt;a href=&#34;http://www.unidata.ucar.edu/software/netcdf/docs/&#34;&gt;here&lt;/a&gt;. NetCDF files are really great for data distribution because they are self-describing, in other words they tell you what&amp;rsquo;s inside. Additionally if you have a very large NetCDF data file, you can only pull out the subset of data you are interested in instead of opening the whole thing. There&amp;rsquo;s more to them than this, but those are the important bits to me so far.&lt;/p&gt;
+
+&lt;h1 id=&#34;data&#34;&gt;Data&lt;/h1&gt;
+
+&lt;p&gt;We&amp;rsquo;ll use (amazingly) free chlorophyll-a data from &lt;a href=&#34;http://www.globcolour.info&#34;&gt;http://www.globcolour.info&lt;/a&gt;. These are gridded longitude by latitude values. Bear in mind that your NetCDF files may contain higher dimensions (e.g. longitude by latitude by time).&lt;/p&gt;
+
+&lt;h1 id=&#34;r&#34;&gt;R&lt;/h1&gt;
+
+&lt;p&gt;I&amp;rsquo;m using &lt;a href=&#34;https://cran.r-project.org/web/packages/ncdf4/ncdf4.pdf&#34;&gt;&lt;code&gt;ncdf4&lt;/code&gt;&lt;/a&gt; along with Hadley Wickham&amp;rsquo;s &lt;a href=&#34;https://cran.r-project.org/web/packages/reshape2/reshape2.pdf&#34;&gt;&lt;code&gt;reshape2&lt;/code&gt;&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/dplyr/dplyr.pdf&#34;&gt;&lt;code&gt;dplyr&lt;/code&gt;&lt;/a&gt; libraries.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ncdf4&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;reshape2&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;dplyr&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# retrieve a list of nc files in my data folder:&lt;/span&gt;
+flist &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;list.files&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;path &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;data/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; pattern &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;^.*\\.(nc|NC|Nc|Nc)$&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;investigate-a-netcdf-file&#34;&gt;Investigate a NetCDF file&lt;/h2&gt;
+
+&lt;p&gt;We&amp;rsquo;ll dissect a single NetCDF file first and then we&amp;rsquo;ll tie it all together in a function at the end.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Open a connection to the first file in our list&lt;/span&gt;
+nc &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; nc_open&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; flist&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can get a description of what&amp;rsquo;s inside the nc file using &lt;code&gt;print(nc)&lt;/code&gt; which dumps info to your console. The output can be quite long so I prefer to save it to a text file. That way I can keep it open and avoid continuous scrolling in my console window.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Save the print(nc) dump to a text file (same name as the nc file with a txt extension)&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kp&#34;&gt;sink&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; flist&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;.txt&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+    &lt;span class=&#34;kp&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;kp&#34;&gt;sink&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We can also access info about what&amp;rsquo;s inside the NetCDF file by investigating its attributes. The term attributes might get a little confusing now.  I&amp;rsquo;ll try to clarify which I&amp;rsquo;m referring to.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;We use R&amp;rsquo;s &lt;code&gt;attributes()&lt;/code&gt; function to get a list of a variable&amp;rsquo;s attributes in the R workspace (&lt;code&gt;?attributes&lt;/code&gt; for more).&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The NetCDF data has its own list of global attributes (product info, spatial extents etc) as well as attributes for each NetCDF variable (units etc).&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Calling the R attributes of the NetCDF &lt;em&gt;file connection&lt;/em&gt; provides access to some information about the file, e.g. variable names (var), number of variables (nvars) etc.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Get a list of the NetCDF&amp;#39;s R attributes:&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;filename&amp;quot;    &amp;quot;writable&amp;quot;    &amp;quot;id&amp;quot;          &amp;quot;safemode&amp;quot;    &amp;quot;format&amp;quot;     
+##  [6] &amp;quot;is_GMT&amp;quot;      &amp;quot;groups&amp;quot;      &amp;quot;fqgn2Rindex&amp;quot; &amp;quot;ndims&amp;quot;       &amp;quot;natts&amp;quot;      
+## [11] &amp;quot;dim&amp;quot;         &amp;quot;unlimdimid&amp;quot;  &amp;quot;nvars&amp;quot;       &amp;quot;var&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;kp&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;The file has&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;nvars&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;variables,&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;ndims&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;dimensions and&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;natts&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;NetCDF attributes&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;The file has 3 variables, 2 dimensions and 52 NetCDF attributes&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;retrieve-the-data&#34;&gt;Retrieve the data&lt;/h2&gt;
+
+&lt;p&gt;Calling the R attributes of &amp;ldquo;var&amp;rdquo; (revealed above), reveals the NetCDF variable names. These names in turn give us access to the data and associated NetCDF attributes (units etc).&lt;/p&gt;
+
+&lt;p&gt;Our data contains three grids, &amp;ldquo;CHL1_mean&amp;rdquo;  &amp;ldquo;CHL1_flags&amp;rdquo; &amp;ldquo;CHL1_error&amp;rdquo;. We&amp;rsquo;ll just focus on the chlorophyll-a data. The flags data is associated with cloud cover and the error describes error associated with each data point. These are fully described in the &lt;a href=&#34;http://www.globcolour.info/CDR_Docs/GlobCOLOUR_PUG.pdf&#34;&gt;Product User Guide&lt;/a&gt;. We use the ncvar_get() function to save the data locally. refer to &lt;code&gt;?ncvar_get&lt;/code&gt; for more on extracting subsets.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Get a list of the nc variable names.&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;var&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;CHL1_mean&amp;quot;  &amp;quot;CHL1_flags&amp;quot; &amp;quot;CHL1_error&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Take a look at the chlorophyll variable&amp;#39;s nc attributes (units etc).&lt;/span&gt;
+ncatt_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;var&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## $standard_name
+## [1] &amp;quot;mass_concentration_of_chlorophyll_a_in_sea_water&amp;quot;
+## 
+## $long_name
+## [1] &amp;quot;Chlorophyll concentration - Mean of the binned pixels&amp;quot;
+## 
+## $`_FillValue`
+## [1] -999
+## 
+## $units
+## [1] &amp;quot;mg/m3&amp;quot;
+## 
+## $pct_characterised_error
+## [1] 43.31
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Retrieve a matrix of the chlorophyll data using the ncvar_get function:&lt;/span&gt;
+chla_mean &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;var&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# Print the data&amp;#39;s dimensions&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_mean&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 453 256
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we will retrieve the latitude and longitude data stored as NetCDF dimensions (&amp;ldquo;dim&amp;rdquo;). We can compare the extents of these dimensions with those of our data matrix to confirm that they match. We will then use them to assign meaningful row and column names to our data.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Retrieve the latitude and longitude values.&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;lat&amp;quot; &amp;quot;lon&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;nc_lat &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+nc_lon &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+
+&lt;span class=&#34;kp&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_lat&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;latitudes and&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_lon&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;longitudes&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;256 latitudes and 453 longitudes&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;These dimensions match those of the chl-a data which is arranged in a nc_lon(rows) by nc_lat(cols) matrix. This also matches what we saw in the text file.&lt;/p&gt;
+
+&lt;h2 id=&#34;tidy-up-a-bit&#34;&gt;Tidy up a bit&lt;/h2&gt;
+
+&lt;p&gt;We can make the data a little easier to think about with a bit of labelling and by transposing the data matrix so that the latitudes are in the rows and longitudes are in the columns. This isn&amp;rsquo;t really critical though.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# a quick look at a (pseudo) random section of this data&lt;/span&gt;
+chla_mean&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;35&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;37&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;245&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;247&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##           [,1]      [,2]      [,3]
+## [1,] 0.1415056 0.1358830 0.1303250
+## [2,] 0.1339336 0.1328560 0.1255906
+## [3,] 0.1358152 0.1276533 0.1243571
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Change the dimension names of our matrix to &amp;#34;lon&amp;#34; and &amp;#34;lat&amp;#34;, &lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# and the row and column names to the latitude and longitude values.&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;dimnames&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_mean&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;list&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lon&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;nc_lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; lat&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;nc_lat&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+chla_mean&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;35&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;37&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;245&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;247&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##                   lat
+## lon                -36.4791717529297 -36.5208358764648 -36.5625038146973
+##   16.6458396911621         0.1415056         0.1358830         0.1303250
+##   16.6875057220459         0.1339336         0.1328560         0.1255906
+##   16.7291717529297         0.1358152         0.1276533         0.1243571
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# lastly, you may want to transpose this matrix.&lt;/span&gt;
+chla_mean &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_mean&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+chla_mean&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;245&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;247&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;35&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;37&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##                    lon
+## lat                 16.6458396911621 16.6875057220459 16.7291717529297
+##   -36.4791717529297        0.1415056        0.1339336        0.1358152
+##   -36.5208358764648        0.1358830        0.1328560        0.1276533
+##   -36.5625038146973        0.1303250        0.1255906        0.1243571
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;global-attributes&#34;&gt;Global attributes&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s take a look at the global NetCDF attributes. We saw above and in the text file that there were 52 global attributes in this file and they contain all kinds of useful info. Which attributes you will need is dependent on your analysis. We&amp;rsquo;ll retrieve all the attributes with the &lt;code&gt;ncatt_get()&lt;/code&gt; function. The &lt;code&gt;names()&lt;/code&gt; function will give us a list of attribute names. These names will give us access to the relevant values. Thereafter it&amp;rsquo;s easy to store whichever you want. I&amp;rsquo;ll store the start and end date-times for this data set.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Retrieve the attributes&lt;/span&gt;
+nc_atts &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncatt_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# List all the attributes (commented to save space).&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# names(nc_atts)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# Retrieve the start and end date-times&lt;/span&gt;
+date_time_start &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;as.POSIXct&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_atts&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;start_time&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; format &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;%Y%m%dT%H%M%SZ&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tz &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;UTC&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+date_time_end &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;as.POSIXct&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_atts&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;end_time&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; format &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;%Y%m%dT%H%M%SZ&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tz &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;UTC&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;It&amp;rsquo;s always a good idea to close the connection to the nc file when youre done.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;nc_close&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;processing-multiple-netcdf-files&#34;&gt;Processing multiple NetCDF files&lt;/h2&gt;
+
+&lt;p&gt;We&amp;rsquo;ve investigated various properties of a NetCDF file and seen how to extract and store variables. We have a whole directory of daily chlorophyll-a data files though and we can&amp;rsquo;t process them one at a time. We&amp;rsquo;ll write a small function to loop through them, and using what we&amp;rsquo;ve learned we will extract and add the data to a dataframe in long format. If you need other data structures it should be easy to adjust the function as required.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Define our function&lt;/span&gt;
+process_nc &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;function&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;files&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# iterate through the nc&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;i &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;files&lt;span class=&#34;p&#34;&gt;)){&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# open a conneciton to the ith nc file&lt;/span&gt;
+        nc_tmp &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; nc_open&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; files&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;i&lt;span class=&#34;p&#34;&gt;]))&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# store values from variables and atributes&lt;/span&gt;
+        nc_chla &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;var&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+        nc_lat &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+        nc_lon &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+        nc_atts &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncatt_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        nc_start_date &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;as.Date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_atts&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;period_start_day&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; format &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;%Y%m%d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tz &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;UTC&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# close the connection sice were finished&lt;/span&gt;
+        nc_close&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# set the dimension names and values of your matrix to the appropriate latitude and longitude values&lt;/span&gt;
+        &lt;span class=&#34;kp&#34;&gt;dimnames&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_chla&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;list&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lon&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;nc_lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; lat&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;nc_lat&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+        &lt;span class=&#34;c1&#34;&gt;# I&amp;#39;m choosing to store all the data in long format.&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# depending on your workflow you can make different choices here...&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# Your variable may get unmanageably large here&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# if you have high spatial and temporal resolution nc data.&lt;/span&gt;
+        tmp_chl_df &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; melt&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_chla&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; value.name &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;chla&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        tmp_chl_df&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;date_start &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; nc_start_date
+
+        &lt;span class=&#34;c1&#34;&gt;# set the name of my new variable and bind the new data to it&lt;/span&gt;
+        &lt;span class=&#34;kr&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;exists&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;chla_data_monthly&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)){&lt;/span&gt;
+            chla_data_monthly &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; bind_rows&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_data_monthly&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tmp_chl_df&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+            chla_data_monthly &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; tmp_chl_df
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# tidy up, not sure if necesarry really, but neater&lt;/span&gt;
+        &lt;span class=&#34;kp&#34;&gt;rm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_chla&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_atts&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_start_date&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tmp_chl_df&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#34;kr&#34;&gt;return&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_data_monthly&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+
+data &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; process_nc&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;flist&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Ok that&amp;rsquo;s it. I hope someone finds this useful :).&lt;/p&gt;
+</description>
     </item>
     
   </channel>

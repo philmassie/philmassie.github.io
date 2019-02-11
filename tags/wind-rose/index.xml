@@ -8,7 +8,7 @@
     <language>en-us</language>
     <lastBuildDate>Thu, 30 Jun 2016 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://philmassie.github.io/tags/wind-rose/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="https://philmassie.github.io/tags/wind-rose/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -17,7 +17,116 @@
       <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</guid>
-      <description>Style for changing title colour depending on photo  div.post-heading h1, div.post-heading h2, div.post-heading span.meta { color: midnightblue; }  Introduction This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.</description>
+      <description>
+
+&lt;h1 id=&#34;style-for-changing-title-colour-depending-on-photo&#34;&gt;Style for changing title colour depending on photo&lt;/h1&gt;
+
+&lt;style&gt;
+   div.post-heading h1, 
+   div.post-heading h2, 
+   div.post-heading span.meta {
+    color: midnightblue;
+  }
+&lt;/style&gt;
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.&lt;/p&gt;
+
+&lt;p&gt;In my article I wanted a graphic which illustrated the preferred outward post-moult migration direction of adult female southern elephant seals from Marion Island. In reality it doesn&amp;rsquo;t matter too much what you want to plot, and these sorts of plots are more generally used for wind direction illustrations. Really, they are like radial histograms. In fact, if you look through the ggplot2 call, it is basically a histogram until the last couple of lines, where it is wrapped into a wind rose.&lt;/p&gt;
+
+&lt;h1 id=&#34;the-data&#34;&gt;The data&lt;/h1&gt;
+
+&lt;p&gt;As I mentioned, my data was related to seal swimming directions, gathered from satellite tags. For this tutorial I will simulate 100000 directions using the wrapped normal function (rwrpnorm) from the CircStats package.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ggplot2&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;CircStats&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;kp&#34;&gt;set.seed&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+data &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;data.frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;direction &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; deg&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;rwrpnorm&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;100000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; rad&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;225&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; rho&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0.8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; sd&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)))&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# Take a quick look...&lt;/span&gt;
+hist&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;direction&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; main &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Histogram of hypothetical direction frequencies.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; xlab &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Direction&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; ylab &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Frequency&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;
+&lt;img src=&#34;histo-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+
+&lt;p&gt;That looks like a reasonable distribution of directions, favouring 225°.&lt;/p&gt;
+
+&lt;h1 id=&#34;method&#34;&gt;Method&lt;/h1&gt;
+
+&lt;p&gt;There are various ways to split and plot these data. Some searching lead me &lt;a href=&#34;http://stackoverflow.com/questions/17266780/wind-rose-with-ggplot-r&#34;&gt;to this one&lt;/a&gt;. First we will define the bin width (30°), then we will define dir.breaks which stores the range of each bin as follows 345°-15°, 15°-45°, 45°-75° etc.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# choose bin size (degrees/bin)&lt;/span&gt;
+deg &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt; 
+&lt;span class=&#34;c1&#34;&gt;# define the range of each bin&lt;/span&gt;
+dir.breaks &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;deg&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;360&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;deg&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; deg&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now we generate a factor variable, exchanging the directions with the ranges. We&amp;rsquo;ll also generate some pretty labels and assign them as levels of the new object. Finally we&amp;rsquo;ll attach the new variable to the main dataset.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# assign each direction to a bin range&lt;/span&gt;
+dir.binned &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;cut&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;direction&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                       breaks &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; dir.breaks&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                       ordered_result &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;TRUE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# generate pretty lables&lt;/span&gt;
+dir.labels &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;as.character&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;360&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;deg&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; by &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; deg&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# replace ranges with pretty bin lables&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;levels&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;dir.binned&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; dir.labels
+&lt;span class=&#34;c1&#34;&gt;# Assign bin names to the original data set&lt;/span&gt;
+data&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;dir.binned &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; dir.binned&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h1 id=&#34;plotting&#34;&gt;Plotting&lt;/h1&gt;
+
+&lt;h2 id=&#34;theming&#34;&gt;Theming&lt;/h2&gt;
+
+&lt;p&gt;The important points here are blank values for &lt;code&gt;panel.border&lt;/code&gt; and &lt;code&gt;panel.grid&lt;/code&gt;. This turns off the default background for ggplot2 so that we can define the borders and grids manually later.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;thm &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; theme_bw&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; 
+    theme&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;axis.text.x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          axis.text.y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          axis.title.x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_blank&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt;
+          axis.title.y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; hjust &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.9&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; vjust &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          panel.border &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_blank&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt;
+          panel.grid  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_blank&lt;span class=&#34;p&#34;&gt;())&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;now-the-main-plot&#34;&gt;Now the main plot&amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;The main plot sets things up quite specifically. What we need to know before going on is the frequency of the most common bin.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;kp&#34;&gt;summary&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;dir.binned&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##     0    30    60    90   120   150   180   210   240   270   300   330 
+##    79     1     5    83   884  4993 15875 28134 28403 15751  4926   866
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So there are 28403 counts of the 240° bin. We need this value to set our y-scales correctly. Our y-axis will have breaks every 5000 counts so we&amp;rsquo;ll use 30000 as the max for the y-axis. The first parts of this plot will plot a rectangular histogram, only the &lt;code&gt;coord_polar&lt;/code&gt; function wraps it into a wind rose.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# initialise the plot&lt;/span&gt;
+plt.dirrose &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# since the plot background is blank we&amp;#39;ll add a series of horizontal lines, at 5000 count intervals, up to 25000.&lt;/span&gt;
+    geom_hline&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;yintercept &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;25000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; by &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;5000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; colour &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;grey60&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# Now we add a darker horizontal line as the top border at 30000.&lt;/span&gt;
+    geom_hline&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;yintercept &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; colour &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# We want 12 vertical lines representing the centers of the 30° ranges.&lt;/span&gt;
+    geom_vline&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;xintercept &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;12&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)),&lt;/span&gt; colour &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;grey60&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# On top of everything we place the histogram bars.&lt;/span&gt;
+    geom_bar&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; data&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; dir.binned&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; width &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; alpha&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0.5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; 
+    &lt;span class=&#34;c1&#34;&gt;# Add the x-axis labels&lt;/span&gt;
+    scale_x_discrete&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; drop &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;FALSE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; labels &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;90&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;180&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;270&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# Add the y-axis labels&lt;/span&gt;
+    scale_y_continuous&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;limits &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; expand &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                       breaks &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;5000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;10000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;15000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;20000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;25000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                       labels &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;25&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# Add the axis titles&lt;/span&gt;
+    labs&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;Outward step bearing (°)&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;Count of outward steps (x10³)&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# If you only use the plot code up till here you will get a histogram.&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# the next line wraps the histogram into a windrose&lt;/span&gt;
+    coord_polar&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;start &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;deg&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;pi&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;180&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# apply theme&lt;/span&gt;
+    thm
+
+plt.dirrose&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;
+&lt;img src=&#34;rose-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+
+&lt;p&gt;There we have it; a wind rose, in grey scale illustrating our data exactly as we need it to.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Saving the plot according to the publishers requirements&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;ggsave&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;filename &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;plt.dirrose.png&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; plot &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; plt.dirrose&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; width &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;84&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; height &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;84&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; units&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;mm&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; dpi &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;300&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; type&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;cairo-png&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Hope this helps :)
+&lt;a href=&#34;https://github.com/philmassie/20160630_ggplot2_wind_rose&#34;&gt;github repo&lt;/a&gt;&lt;/p&gt;
+</description>
     </item>
     
   </channel>

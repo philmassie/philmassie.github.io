@@ -8,7 +8,7 @@
     <language>en-us</language>
     <lastBuildDate>Mon, 21 Jan 2019 15:03:00 +0200</lastBuildDate>
     
-	<atom:link href="https://philmassie.github.io/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="https://philmassie.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -17,8 +17,14 @@
       <pubDate>Mon, 21 Jan 2019 15:03:00 +0200</pubDate>
       
       <guid>https://philmassie.github.io/top/about/</guid>
-      <description>I am a data scientist trained in statistical ecology. I have degrees in conservation biology, marine biology and oceanography but now work in the financial services sector as park of a great team.
-I worked for many years in web development, client and server side, and have a good working knowledge of various server architecture stacks and have experience in numerous scripting languages. I&amp;rsquo;ve found that the combination of my IT experience and science skills and mindset has prepared me well for a career in data science.</description>
+      <description>&lt;p&gt;I am a data scientist trained in statistical ecology. I have degrees in conservation biology, marine biology and oceanography but now work in the financial services sector as park of a great team.&lt;/p&gt;
+
+&lt;p&gt;I worked for many years in web development, client and server side, and have a good working knowledge of various server architecture stacks and have experience in numerous scripting languages. I&amp;rsquo;ve found that the combination of my IT experience and science skills and mindset has prepared me well for a career in data science.&lt;/p&gt;
+
+&lt;p&gt;My other hobbies include photography and occasionally some surfing. Unfortunately there don&amp;rsquo;t seem to be enough hours in the day to do all the odds and ends I want to and so work and family are my primary focus.&lt;/p&gt;
+
+&lt;p&gt;I also love the outdoors and an a bit of a bird nerd. I find birds beautiful and fascinating and love watching them and trying (and usually failing) to photograph them. Some of these posts will probably be pretty random photos of birds. I strive to be a good naturalist, and at this rate that will take the rest of my life. That&amp;rsquo;s fine with me.&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -27,7 +33,113 @@ I worked for many years in web development, client and server side, and have a g
       <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20190111/pu_learning/</guid>
-      <description>Introduction A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly imbalanced data sets and pressed for time, I have often taken the simplistic route of sub-sampling the unknown set and treating them as unknowns. Obviously this isn&amp;rsquo;t ideal as the unknown set is contaminated and as a result the classifiers dont train that well.</description>
+      <description>
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;A challenge that keeps presenting itself at work is one of not having a labelled negative class in the context of needing to train a binary classifier. Typically, the issue is paired with horribly imbalanced data sets and pressed for time, I have often taken the simplistic route of sub-sampling the unknown set and treating them as unknowns. Obviously this isn&amp;rsquo;t ideal as the unknown set is contaminated and as a result the classifiers dont train that well. Nevertheless, out in the wild, with real-life deadlines, the approach was time efficient, and the results were often surprisingly useful.&lt;/p&gt;
+
+&lt;p&gt;Recently, I was lucky to have a few days to read around the topic a little. I found some interesting approaches and thought it would be worth taking a few notes, and they turned into this post.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Disclaimer: This post is not intended to be an exhaustive review of the PU learning approaches. Essentially, it&amp;rsquo;s just me making some notes and storing them somewhere I can find them again, and where they may be helpful to someone else.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;There are a few different PU approaches around. All the approaches involve isolating a set of so-called &amp;lsquo;Reliable Negatives&amp;rsquo; (RNs) from the unknown data set. As I read, the most widely cited, initial approaches are attributed to Liu et al. 2002 and 2003 wherein a set of RNs are iteratively grown from within the unknown class.&lt;/p&gt;
+
+&lt;p&gt;Another approach was described by Fusilier et al. 2015. In their paper the authors describe an approach which iteratively reduces the set of RNs from within the unknown class, effectively tightening the net around those cases which are the most dissimilar to the positive class. This approach appealed to me as it implicitly deals with class imbalance.&lt;/p&gt;
+
+&lt;p&gt;The third approach I came across (Mordelet &amp;amp; Vert 2013) which also implicitly accounts for class imbalance involves bagging, or randomly sampling from the unknown class and treating the sample as negatives. Where this deviates from my naive approach mentioned above is that the process is repeated many times and a series of models are trained. The models characterise the positive class against unknown data sets with varying degrees of contamination. The resulting model scores are ensembled and the result should better isolate the reliable negatives from the unknown class.&lt;/p&gt;
+
+&lt;p&gt;Below, I will go into a little detail about each of the three approaches.&lt;/p&gt;
+
+&lt;h1 id=&#34;methods&#34;&gt;Methods&lt;/h1&gt;
+
+&lt;h2 id=&#34;original-approach-liu-et-al-2002-and-2003&#34;&gt;&amp;lsquo;Original&amp;rsquo; approach (Liu et al. 2002 and 2003)&lt;/h2&gt;
+
+&lt;p&gt;Given a training set containing only positives (P) and unknown (U) classes follow the following steps:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Treating all U as negatives (N) train a classifier P vs. U&lt;/li&gt;
+&lt;li&gt;Using the classifier, score the unknown class and isolate the set of &amp;lsquo;reliable&amp;rsquo; negatives (RN).&lt;/li&gt;
+&lt;li&gt;Train a new classifier on P vs. RN, use it to score the remaining U, isolate additional RN and enlarge RN.&lt;/li&gt;
+&lt;li&gt;Repeat step 3, iteratively enlarging the set of RN until the stopping condition is met.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The stopping condition is met when no new negative cases are classified.&lt;/p&gt;
+
+&lt;p&gt;Where &lt;code&gt;Q&lt;/code&gt; is defined as the set of unknowns classified as negatives and &lt;code&gt;i&lt;/code&gt; is the iterator, the stopping condition is defined as:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;|Qi| &amp;gt; 0&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;modified-approach-fusilier-et-al-2014&#34;&gt;Modified approach (Fusilier et al. 2014)&lt;/h2&gt;
+
+&lt;p&gt;Given a training set containing only positives (P) and unknown (U) classes follow the following steps:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Treating all U as negatives (N) train a classifier P vs. U&lt;/li&gt;
+&lt;li&gt;Using the classifier, score the unknown class and isolate the set of &amp;lsquo;reliable&amp;rsquo; negatives (RN).&lt;/li&gt;
+&lt;li&gt;Train a new classifier on P vs. RN. Score RN and exclude predicted positives from RN&lt;/li&gt;
+&lt;li&gt;Repeat step 3, iteratively refining the RN set, until the stopping condition is met.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Where &lt;code&gt;Q&lt;/code&gt; is defined as the set of unknowns classified as negatives and &lt;code&gt;i&lt;/code&gt; is the iterator, the stopping condition is defined as:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;|Qi| &amp;lt;= |Q(i-1)| &amp;amp; |P| &amp;lt; |Qi|&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The stopping condition ensures that Q reduces in size (avoiding sudden large reductions in RN size) while the RN set never gets smaller than the P set. More explicitly:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;while the size of the set of unknowns classified as negatives in &lt;em&gt;this iteration&lt;/em&gt; is smaller than or equal to the size of the set of unknowns classified as negatives in &lt;em&gt;the previous iteration&lt;/em&gt; and the size of the set of positive classes  is smaller than the set of refined RNs resulting from &lt;em&gt;this iteration&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;bagging-approach-inductive-mordelet-vert-2013&#34;&gt;Bagging approach (Inductive) (Mordelet &amp;amp; Vert 2013)&lt;/h2&gt;
+
+&lt;p&gt;Given a training set containing only positives (P) and unknowns (U), where K = size of bootstrap samples and T = number of samples, follow the following steps:
+1. Draw a bootstrap sample Ut of size K from U
+2. Train a classifier P vs Ut
+3. Repeat steps 1 and 2 T times
+4. Score the test data with an ensemble approach using the bagged models.&lt;/p&gt;
+
+&lt;p&gt;The stopping criterion here is determined by the value of T and the authors suggest that there is typically not much additional value to be gained by setting T &amp;gt; 100. Judging from their plots however, where &lt;code&gt;|P|&lt;/code&gt; and &lt;code&gt;K&lt;/code&gt; are both large, there is little change above T = 5. I suspect it&amp;rsquo;s worth trying to keep track of this during training if possible or setting up an early stopping type criterion in your function because depending on your time constraints as training 100 models may not be viable.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;h2 id=&#34;things-to-follow-up-on&#34;&gt;Things to follow up on:&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Most of the articles use SVM, but they also tend to be NLP problems. Does the classifier family matter much?&lt;/li&gt;
+&lt;li&gt;How do the original papers identify the cut-off for determining &amp;lsquo;reliability&amp;rsquo;&lt;/li&gt;
+&lt;li&gt;Modified approach: WRT the stopping criterion, why could Q get larger with the iterations?&lt;/li&gt;
+&lt;li&gt;Bagging approach: Consider how best to penalise false negatives.
+
+&lt;ul&gt;
+&lt;li&gt;Cutoff selection?&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;These three methods provide sensible approaches to the problem of PU learning but only the modified and bagging approaches provide inherent ways to deal with imbalanced data. My plan is to try and implement these 2 approaches and compare their results. While I cant share the data publicly, I will try and share the code and general results on the blog and in GitHub. We work primarily in Python/PySpark or Scala/Spark. Some nice links:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/ispras/pu4spark&#34;&gt;https://github.com/ispras/pu4spark&lt;/a&gt; PU learning libraries written in Scala/Spark&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://astrakhantsev.com/pu-learning/&#34;&gt;https://astrakhantsev.com/pu-learning/&lt;/a&gt; nice post written by author of pu4spark&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://roywright.me/2017/11/16/positive-unlabeled-learning/&#34;&gt;https://roywright.me/2017/11/16/positive-unlabeled-learning/&lt;/a&gt; Nice overview of PU learning approaches&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;references&#34;&gt;References&lt;/h1&gt;
+
+&lt;p&gt;Fusilier DH, Montes-y-Gómez M, Rosso P, Guzmán Cabrera R (2015) Detecting positive and negative deceptive opinions using PU-learning. Inf Process Manag 51:433–443. doi: 10.1016/j.ipm.2014.11.001&lt;/p&gt;
+
+&lt;p&gt;Liu B, Dai Y, Li X, et al (2003) Building text classifiers using positive and unlabeled examples. In: Third IEEE International Conference on Data Mining. pp 179–186&lt;/p&gt;
+
+&lt;p&gt;Liu B, Lee WS, Yu PS, Li X (2002) Partially Supervised Classification of Text Documents. In: Proc. 19th Intl. Conf. on Machine Learning. pp 387–394&lt;/p&gt;
+
+&lt;p&gt;Mordelet F, Vert J-P (2014) A bagging SVM to learn from positive and unlabeled examples. Pattern Recognit Lett 37:201–209. doi: 10.1016/j.patrec.2013.06.010&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -36,7 +148,194 @@ I worked for many years in web development, client and server side, and have a g
       <pubDate>Thu, 04 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20160804/r_netcdf_cheatsheet/</guid>
-      <description>Introduction I recently promised a &amp;ldquo;NetCDF in R&amp;rdquo; cheat sheet to a friend, and I thought it might make a useful tutorial. NetCDF files are often used to distribute gridded, multidimensional spatial data such as sea surface temperature, chlorophyll-a levels and so on. NetCDF is more than just a file format, and so googling it can be a little intimidating. I hope this helps make these files a little easier to use in R.</description>
+      <description>
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;I recently promised a &amp;ldquo;NetCDF in R&amp;rdquo; cheat sheet to a friend, and I thought it might make a useful tutorial. NetCDF files are often used to distribute gridded, multidimensional spatial data such as sea surface temperature, chlorophyll-a levels and so on. NetCDF is more than just a file format, and so googling it can be a little intimidating. I hope this helps make these files a little easier to use in R.&lt;/p&gt;
+
+&lt;p&gt;A full specification for NetCDF can be found &lt;a href=&#34;http://www.unidata.ucar.edu/software/netcdf/docs/&#34;&gt;here&lt;/a&gt;. NetCDF files are really great for data distribution because they are self-describing, in other words they tell you what&amp;rsquo;s inside. Additionally if you have a very large NetCDF data file, you can only pull out the subset of data you are interested in instead of opening the whole thing. There&amp;rsquo;s more to them than this, but those are the important bits to me so far.&lt;/p&gt;
+
+&lt;h1 id=&#34;data&#34;&gt;Data&lt;/h1&gt;
+
+&lt;p&gt;We&amp;rsquo;ll use (amazingly) free chlorophyll-a data from &lt;a href=&#34;http://www.globcolour.info&#34;&gt;http://www.globcolour.info&lt;/a&gt;. These are gridded longitude by latitude values. Bear in mind that your NetCDF files may contain higher dimensions (e.g. longitude by latitude by time).&lt;/p&gt;
+
+&lt;h1 id=&#34;r&#34;&gt;R&lt;/h1&gt;
+
+&lt;p&gt;I&amp;rsquo;m using &lt;a href=&#34;https://cran.r-project.org/web/packages/ncdf4/ncdf4.pdf&#34;&gt;&lt;code&gt;ncdf4&lt;/code&gt;&lt;/a&gt; along with Hadley Wickham&amp;rsquo;s &lt;a href=&#34;https://cran.r-project.org/web/packages/reshape2/reshape2.pdf&#34;&gt;&lt;code&gt;reshape2&lt;/code&gt;&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/dplyr/dplyr.pdf&#34;&gt;&lt;code&gt;dplyr&lt;/code&gt;&lt;/a&gt; libraries.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ncdf4&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;reshape2&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;dplyr&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# retrieve a list of nc files in my data folder:&lt;/span&gt;
+flist &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;list.files&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;path &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;data/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; pattern &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;^.*\\.(nc|NC|Nc|Nc)$&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;investigate-a-netcdf-file&#34;&gt;Investigate a NetCDF file&lt;/h2&gt;
+
+&lt;p&gt;We&amp;rsquo;ll dissect a single NetCDF file first and then we&amp;rsquo;ll tie it all together in a function at the end.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Open a connection to the first file in our list&lt;/span&gt;
+nc &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; nc_open&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; flist&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can get a description of what&amp;rsquo;s inside the nc file using &lt;code&gt;print(nc)&lt;/code&gt; which dumps info to your console. The output can be quite long so I prefer to save it to a text file. That way I can keep it open and avoid continuous scrolling in my console window.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Save the print(nc) dump to a text file (same name as the nc file with a txt extension)&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kp&#34;&gt;sink&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; flist&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;.txt&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+    &lt;span class=&#34;kp&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;kp&#34;&gt;sink&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We can also access info about what&amp;rsquo;s inside the NetCDF file by investigating its attributes. The term attributes might get a little confusing now.  I&amp;rsquo;ll try to clarify which I&amp;rsquo;m referring to.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;We use R&amp;rsquo;s &lt;code&gt;attributes()&lt;/code&gt; function to get a list of a variable&amp;rsquo;s attributes in the R workspace (&lt;code&gt;?attributes&lt;/code&gt; for more).&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The NetCDF data has its own list of global attributes (product info, spatial extents etc) as well as attributes for each NetCDF variable (units etc).&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Calling the R attributes of the NetCDF &lt;em&gt;file connection&lt;/em&gt; provides access to some information about the file, e.g. variable names (var), number of variables (nvars) etc.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Get a list of the NetCDF&amp;#39;s R attributes:&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;filename&amp;quot;    &amp;quot;writable&amp;quot;    &amp;quot;id&amp;quot;          &amp;quot;safemode&amp;quot;    &amp;quot;format&amp;quot;     
+##  [6] &amp;quot;is_GMT&amp;quot;      &amp;quot;groups&amp;quot;      &amp;quot;fqgn2Rindex&amp;quot; &amp;quot;ndims&amp;quot;       &amp;quot;natts&amp;quot;      
+## [11] &amp;quot;dim&amp;quot;         &amp;quot;unlimdimid&amp;quot;  &amp;quot;nvars&amp;quot;       &amp;quot;var&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;kp&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;The file has&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;nvars&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;variables,&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;ndims&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;dimensions and&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;natts&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;NetCDF attributes&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;The file has 3 variables, 2 dimensions and 52 NetCDF attributes&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;retrieve-the-data&#34;&gt;Retrieve the data&lt;/h2&gt;
+
+&lt;p&gt;Calling the R attributes of &amp;ldquo;var&amp;rdquo; (revealed above), reveals the NetCDF variable names. These names in turn give us access to the data and associated NetCDF attributes (units etc).&lt;/p&gt;
+
+&lt;p&gt;Our data contains three grids, &amp;ldquo;CHL1_mean&amp;rdquo;  &amp;ldquo;CHL1_flags&amp;rdquo; &amp;ldquo;CHL1_error&amp;rdquo;. We&amp;rsquo;ll just focus on the chlorophyll-a data. The flags data is associated with cloud cover and the error describes error associated with each data point. These are fully described in the &lt;a href=&#34;http://www.globcolour.info/CDR_Docs/GlobCOLOUR_PUG.pdf&#34;&gt;Product User Guide&lt;/a&gt;. We use the ncvar_get() function to save the data locally. refer to &lt;code&gt;?ncvar_get&lt;/code&gt; for more on extracting subsets.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Get a list of the nc variable names.&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;var&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;CHL1_mean&amp;quot;  &amp;quot;CHL1_flags&amp;quot; &amp;quot;CHL1_error&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Take a look at the chlorophyll variable&amp;#39;s nc attributes (units etc).&lt;/span&gt;
+ncatt_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;var&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## $standard_name
+## [1] &amp;quot;mass_concentration_of_chlorophyll_a_in_sea_water&amp;quot;
+## 
+## $long_name
+## [1] &amp;quot;Chlorophyll concentration - Mean of the binned pixels&amp;quot;
+## 
+## $`_FillValue`
+## [1] -999
+## 
+## $units
+## [1] &amp;quot;mg/m3&amp;quot;
+## 
+## $pct_characterised_error
+## [1] 43.31
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Retrieve a matrix of the chlorophyll data using the ncvar_get function:&lt;/span&gt;
+chla_mean &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;var&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# Print the data&amp;#39;s dimensions&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_mean&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 453 256
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we will retrieve the latitude and longitude data stored as NetCDF dimensions (&amp;ldquo;dim&amp;rdquo;). We can compare the extents of these dimensions with those of our data matrix to confirm that they match. We will then use them to assign meaningful row and column names to our data.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Retrieve the latitude and longitude values.&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;lat&amp;quot; &amp;quot;lon&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;nc_lat &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+nc_lon &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+
+&lt;span class=&#34;kp&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_lat&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;latitudes and&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_lon&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;longitudes&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;256 latitudes and 453 longitudes&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;These dimensions match those of the chl-a data which is arranged in a nc_lon(rows) by nc_lat(cols) matrix. This also matches what we saw in the text file.&lt;/p&gt;
+
+&lt;h2 id=&#34;tidy-up-a-bit&#34;&gt;Tidy up a bit&lt;/h2&gt;
+
+&lt;p&gt;We can make the data a little easier to think about with a bit of labelling and by transposing the data matrix so that the latitudes are in the rows and longitudes are in the columns. This isn&amp;rsquo;t really critical though.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# a quick look at a (pseudo) random section of this data&lt;/span&gt;
+chla_mean&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;35&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;37&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;245&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;247&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##           [,1]      [,2]      [,3]
+## [1,] 0.1415056 0.1358830 0.1303250
+## [2,] 0.1339336 0.1328560 0.1255906
+## [3,] 0.1358152 0.1276533 0.1243571
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Change the dimension names of our matrix to &amp;#34;lon&amp;#34; and &amp;#34;lat&amp;#34;, &lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# and the row and column names to the latitude and longitude values.&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;dimnames&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_mean&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;list&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lon&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;nc_lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; lat&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;nc_lat&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+chla_mean&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;35&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;37&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;245&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;247&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##                   lat
+## lon                -36.4791717529297 -36.5208358764648 -36.5625038146973
+##   16.6458396911621         0.1415056         0.1358830         0.1303250
+##   16.6875057220459         0.1339336         0.1328560         0.1255906
+##   16.7291717529297         0.1358152         0.1276533         0.1243571
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# lastly, you may want to transpose this matrix.&lt;/span&gt;
+chla_mean &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_mean&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+chla_mean&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;245&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;247&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;35&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;37&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##                    lon
+## lat                 16.6458396911621 16.6875057220459 16.7291717529297
+##   -36.4791717529297        0.1415056        0.1339336        0.1358152
+##   -36.5208358764648        0.1358830        0.1328560        0.1276533
+##   -36.5625038146973        0.1303250        0.1255906        0.1243571
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;global-attributes&#34;&gt;Global attributes&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s take a look at the global NetCDF attributes. We saw above and in the text file that there were 52 global attributes in this file and they contain all kinds of useful info. Which attributes you will need is dependent on your analysis. We&amp;rsquo;ll retrieve all the attributes with the &lt;code&gt;ncatt_get()&lt;/code&gt; function. The &lt;code&gt;names()&lt;/code&gt; function will give us a list of attribute names. These names will give us access to the relevant values. Thereafter it&amp;rsquo;s easy to store whichever you want. I&amp;rsquo;ll store the start and end date-times for this data set.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Retrieve the attributes&lt;/span&gt;
+nc_atts &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncatt_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# List all the attributes (commented to save space).&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# names(nc_atts)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# Retrieve the start and end date-times&lt;/span&gt;
+date_time_start &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;as.POSIXct&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_atts&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;start_time&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; format &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;%Y%m%dT%H%M%SZ&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tz &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;UTC&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+date_time_end &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;as.POSIXct&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_atts&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;end_time&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; format &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;%Y%m%dT%H%M%SZ&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tz &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;UTC&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;It&amp;rsquo;s always a good idea to close the connection to the nc file when youre done.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;nc_close&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;processing-multiple-netcdf-files&#34;&gt;Processing multiple NetCDF files&lt;/h2&gt;
+
+&lt;p&gt;We&amp;rsquo;ve investigated various properties of a NetCDF file and seen how to extract and store variables. We have a whole directory of daily chlorophyll-a data files though and we can&amp;rsquo;t process them one at a time. We&amp;rsquo;ll write a small function to loop through them, and using what we&amp;rsquo;ve learned we will extract and add the data to a dataframe in long format. If you need other data structures it should be easy to adjust the function as required.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Define our function&lt;/span&gt;
+process_nc &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;function&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;files&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# iterate through the nc&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;i &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;files&lt;span class=&#34;p&#34;&gt;)){&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# open a conneciton to the ith nc file&lt;/span&gt;
+        nc_tmp &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; nc_open&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; files&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;i&lt;span class=&#34;p&#34;&gt;]))&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# store values from variables and atributes&lt;/span&gt;
+        nc_chla &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;var&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+        nc_lat &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+        nc_lon &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncvar_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;attributes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;dim&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+        nc_atts &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ncatt_get&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        nc_start_date &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;as.Date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_atts&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;period_start_day&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; format &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;%Y%m%d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tz &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;UTC&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# close the connection sice were finished&lt;/span&gt;
+        nc_close&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_tmp&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# set the dimension names and values of your matrix to the appropriate latitude and longitude values&lt;/span&gt;
+        &lt;span class=&#34;kp&#34;&gt;dimnames&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_chla&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;list&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lon&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;nc_lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; lat&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;nc_lat&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+        &lt;span class=&#34;c1&#34;&gt;# I&amp;#39;m choosing to store all the data in long format.&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# depending on your workflow you can make different choices here...&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# Your variable may get unmanageably large here&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# if you have high spatial and temporal resolution nc data.&lt;/span&gt;
+        tmp_chl_df &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; melt&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_chla&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; value.name &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;chla&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        tmp_chl_df&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;date_start &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; nc_start_date
+
+        &lt;span class=&#34;c1&#34;&gt;# set the name of my new variable and bind the new data to it&lt;/span&gt;
+        &lt;span class=&#34;kr&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;exists&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;chla_data_monthly&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)){&lt;/span&gt;
+            chla_data_monthly &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; bind_rows&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_data_monthly&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tmp_chl_df&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+            chla_data_monthly &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; tmp_chl_df
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# tidy up, not sure if necesarry really, but neater&lt;/span&gt;
+        &lt;span class=&#34;kp&#34;&gt;rm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;nc_chla&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_tmp&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_atts&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; nc_start_date&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tmp_chl_df&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#34;kr&#34;&gt;return&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;chla_data_monthly&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+
+data &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; process_nc&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;flist&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Ok that&amp;rsquo;s it. I hope someone finds this useful :).&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -45,8 +344,142 @@ I worked for many years in web development, client and server side, and have a g
       <pubDate>Thu, 14 Jul 2016 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20160714/election_effort/</guid>
-      <description>Style for changing title colour depending on photo  div.post-heading span.meta { color: black; } 
-Introduction With South Africa&amp;rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.</description>
+      <description>
+
+&lt;h1 id=&#34;style-for-changing-title-colour-depending-on-photo&#34;&gt;Style for changing title colour depending on photo&lt;/h1&gt;
+
+&lt;p&gt;&lt;style&gt;
+   div.post-heading span.meta {
+    color: black;
+  }
+&lt;/style&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;With South Africa&amp;rsquo;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.&lt;/p&gt;
+
+&lt;p&gt;Employing and promoting candidates costs money. Assuming that our political parties don&amp;rsquo;t have infinite financial resources it follows that investigating where they invest their resources may be a reasonable proxy for effort. Furthermore, looking at the change in effort adds a temporal dimension, suggesting where effort has increased or decreased between the elections.&lt;/p&gt;
+
+&lt;p&gt;The map below shows the change in PR candidate representation by each party across the county. If you hover your mouse pointer over a district, you can see by how much the representation has changed in terms of two metrics:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Relative change&lt;/strong&gt;: The change in representation as a proportion of all representatives. E.g. In 2011 parties A and B each had 50% of a district&amp;rsquo;s PR candidates. In 2016 party A has 60% and party B has 40%. Party A&amp;rsquo;s relative change is 10% and party B&amp;rsquo;s is -10%.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Absolute change&lt;/strong&gt;: The change in actual number of PR candidates in a party from 2011 to 2016.&lt;/p&gt;
+
+&lt;p&gt;Scroll below the map for more info regarding data sources and methods.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Disclaimer: As I said though, I am no political scientist and so maybe this is all nonsense.&lt;/em&gt;&lt;/p&gt;
+
+&lt;iframe width=&#34;100%&#34; height=&#34;800px&#34; src=&#34;https://philmassie.github.io/election_effort_d3/za_election_effort_2016.html&#34; scrolling = &#34;no&#34; frameborder=&#34;0&#34; seamless name=&#34;iframe-election-content&#34; id=&#34;iframe-election-content&#34;&gt;
+&lt;p&gt;Your browser does not support iframes. Click &lt;a href=&#34;https://philmassie.github.io/election_effort_d3/&#34;&gt;here&lt;/a&gt; to navigate to the content.&lt;/p&gt;
+&lt;/iframe&gt;
+
+&lt;p&gt;Embed this map using the following iframe code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;iframe width=&amp;quot;100%&amp;quot; height=&amp;quot;660px&amp;quot; src=&amp;quot;https://philmassie.github.io/election_effort_d3/za_election_effort_2016.html&amp;quot; scrolling = &amp;quot;no&amp;quot; frameborder=&amp;quot;0&amp;quot; seamless name=&amp;quot;iframe-election-content&amp;quot; id=&amp;quot;iframe-election-content&amp;quot;&amp;gt;
+&amp;lt;p&amp;gt;Your browser does not support iframes. Click &amp;lt;a href=&amp;quot;https://philmassie.github.io/election_effort_d3/&amp;quot;&amp;gt;here&amp;lt;/a&amp;gt; to navigate to the content.&amp;lt;/p&amp;gt;
+&amp;lt;/iframe&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;data-sources&#34;&gt;Data sources&lt;/h1&gt;
+
+&lt;p&gt;The &lt;a href=&#34;http://www.elections.org.za&#34;&gt;Independent Electoral Commission&lt;/a&gt; have published the &lt;a href=&#34;http://www.elections.org.za/content/Elections/Candidates-lists/&#34;&gt;2016 candidate lists&lt;/a&gt; as pdf documents. The good people at &lt;a href=&#34;https://africaopendata.org/&#34;&gt;openAfrica&lt;/a&gt; have already gone to the trouble of &lt;a href=&#34;https://africaopendata.org/dataset/electoral-candidates-2016&#34;&gt;processing these pdfs&lt;/a&gt; (which can be a bit painful) so I used their lists instead. openAfrica also host the &lt;a href=&#34;https://africaopendata.org/dataset/electoral-commission-of-south-africa-local-government-election-candidates&#34;&gt;2011&lt;/a&gt; candidate lists. After learning a little more about the electoral system, it seemed that the proportional representative candidates would be the interesting group to look at.&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&#34;http://www.demarcation.org.za/&#34;&gt;Municipal Demarcation Board&lt;/a&gt; website hosts shape files for South Africa&amp;rsquo;s &lt;a href=&#34;http://www.demarcation.org.za/index.php/downloads/boundary-data/boundary-data-main-files/districts&#34;&gt;districts&lt;/a&gt; and &lt;a href=&#34;http://www.demarcation.org.za/index.php/downloads/boundary-data/boundary-data-main-files/province&#34;&gt;provinces&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&#34;r-data-processing&#34;&gt;R data processing&lt;/h1&gt;
+
+&lt;p&gt;Some simple wrangling in R (scroll down for the process) exposed the list of district codes which I joined with the appropriate candidate lists from each election year. From there I produced a list of parties, ordered by the total number of district or municipal representatives. The Economic Freedom Fighters lead this list with a total of 1501 candidates, 106 more than the African National Congress and 139 more than the Democratic Alliance. These are the three largest parties which is why I mention them. I chose to load the map with ANC data because the EFF didn&amp;rsquo;t exist during the 2011 elections and so they&amp;rsquo;ve not decreased in any provinces. I believe that a few candidates have withdrawn from the elections. I&amp;rsquo;m not sure who they were but I doubt their withdrawal would make any substantive change to this analysis.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;## Libraries&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;rgdal&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;#&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;xlsx&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;#&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;plyr&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;#&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;stringr&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;#&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;dplyr&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;#&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;setwd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;D:/My Folders/R/2016/blog/20160714_election_effort&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Load the district shape file to get a list of district codes&lt;/span&gt;
+za.districts &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; readOGR&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Districts&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; layer&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;DistrictMunicipalities2011&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+za.district.list &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;unique&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;za.districts&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;DISTRICT&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;rm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;za.districts&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# load and process electoral candidate data&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# 2011 Proportional Representative candidates&lt;/span&gt;
+pr.cand.2011 &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; read.xlsx2&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data/2011-pr-candidate-lists.xls&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; startRow &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# A few minor edits to party names&lt;/span&gt;
+pr.cand.2011&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; str_to_title&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;str_replace_all&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;pr.cand.2011&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;  &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+pr.cand.2011&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;pr.cand.2011&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Democratic Alliance/Demokratiese Alliansie&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Democratic Alliance&amp;#34;&lt;/span&gt;
+pr.cand.2011&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;pr.cand.2011&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Independent Ratepayers Association Of Sa&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Independent Ratepayers Association Of SA&amp;#34;&lt;/span&gt;
+pr.cand.2011&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;pr.cand.2011&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;South African Maintanance And Estate Beneficiaries Associati&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;South African Maintanance And Estate Beneficiaries Association&amp;#34;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 2016 ward &amp;amp; proportional Representative candidates were in the same data set&lt;/span&gt;
+ward.pr.cand.2016 &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; read.csv&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data/Electoral_Candidates_2016.csv&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# A few minor edits to party names&lt;/span&gt;
+ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; str_to_title&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;str_replace_all&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;  &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Independent Ratepayers Association Of Sa&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Independent Ratepayers Association Of SA&amp;#34;&lt;/span&gt;
+ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;South African Maintanance And Estate Beneficiaries Associati&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;South African Maintanance And Estate Beneficiaries Association&amp;#34;&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# A number of the 2016 district codes had a wierd &amp;#34;\f&amp;#34; prefix.&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# I consulted the original IEC data,confirmed that these were errors, and tidied them up.&lt;/span&gt;
+err_index &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;grep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;\f&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Municipality&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Municipality&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;err_index&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; str_replace&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Municipality&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;err_index&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;\f&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+ward.pr.cand.2016 &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;droplevels&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ward.pr.cand.2016&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;#### Split the data into ward and pr data&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# change variable names so they match later&lt;/span&gt;
+pr.cand.2016 &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;subset&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ward.pr.cand.2016&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; ward.pr.cand.2016&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;PR.List.OrderNo...Ward.No &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;pr.cand.2016&lt;span class=&#34;p&#34;&gt;)[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;list.order.no&amp;#34;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#### Process ward and PR data&lt;/span&gt;
+processor &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;function&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# get the variable name of passed data&lt;/span&gt;
+    data.name &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;deparse&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;substitute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df&lt;span class=&#34;p&#34;&gt;)))&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# split the municipality names into codes and names&lt;/span&gt;
+    dist.split &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; str_split_fixed&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Municipality&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34; - &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    df&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;dist.code &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; dist.split&lt;span class=&#34;p&#34;&gt;[,&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+    df&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;dist.name &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; dist.split&lt;span class=&#34;p&#34;&gt;[,&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# Keep only the district values from the shape file. Main centers and DC areas.&lt;/span&gt;
+    df &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; df&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;df&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;dist.code &lt;span class=&#34;o&#34;&gt;%in%&lt;/span&gt; za.district.list&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# split data by district and party, counting how many candidates per party per district&lt;/span&gt;
+    df.long &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ddply&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;dist.code&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Party&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;function&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;nrow&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# temp naming - to keep track not NB&lt;/span&gt;
+    &lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df.long&lt;span class=&#34;p&#34;&gt;)[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;num&amp;#34;&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# split new data by district, summing tot candidates from all parties (in district)&lt;/span&gt;
+    df.tot &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ddply&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df.long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;dist.code&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;function&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;num&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# join tot numbers by district to main data&lt;/span&gt;
+    df.long &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; join&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df.long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; df.tot&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; by &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;dist.code&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# temp naming - to keep track not NB&lt;/span&gt;
+    &lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df.long&lt;span class=&#34;p&#34;&gt;)[&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;tot&amp;#34;&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# calculate the proportion of each party to total, for each district&lt;/span&gt;
+    df.long&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;prop &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; df.long&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;num &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; df.long&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;tot
+    &lt;span class=&#34;c1&#34;&gt;# quick srting, not v NB&lt;/span&gt;
+    df.long &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; arrange&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df.long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; dist.code&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;prop&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# renaming based on variable name&lt;/span&gt;
+    &lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df.long&lt;span class=&#34;p&#34;&gt;)[&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;paste0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.name&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;.num&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;paste0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.name&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;.tot&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;paste0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.name&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;.prop&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;return&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;df.long&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+pr.cand.2011.long &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; processor&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;pr.cand.2011&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+pr.cand.2016.long &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; processor&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;pr.cand.2016&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# Join data, dropping parties that no longer exist&lt;/span&gt;
+pr.cand &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; join&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;pr.cand.2011.long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; pr.cand.2016.long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; by &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;dist.code&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Party&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; type &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;right&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# replace NAs with zero for parties new in 2016&lt;/span&gt;
+pr.cand&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;is.na&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;pr.cand&lt;span class=&#34;p&#34;&gt;)]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# calculate relative and absolute change&lt;/span&gt;
+pr.cand&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;rel &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; pr.cand&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;pr.cand.2016.prop &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; pr.cand&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;pr.cand.2011.prop
+pr.cand&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;abs &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; pr.cand&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;pr.cand.2016.num &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; pr.cand&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;pr.cand.2011.num&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# generate data for d3 map&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# full data list&lt;/span&gt;
+d3_data_all &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; pr.cand&lt;span class=&#34;p&#34;&gt;[,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;9&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)]&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;d3_data_all&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;dist_code&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;party&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Relative Change&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Absolute Change&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+write.csv&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;d3_data_all&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; file&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data_d3/d3_data_all.csv&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; row.names &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;FALSE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; quote &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;FALSE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# Party data list, ordered by total number or district PR candidates&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# group the data by Party&lt;/span&gt;
+grouped &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; group_by&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;pr.cand&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; Party&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Summarise by summing the total candidates per party, excluding zeros and sorting&lt;/span&gt;
+d3_party_list &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; summarise&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;grouped&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; tot &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;pr.cand.2016.num&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+d3_party_list &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; d3_party_list&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;d3_party_list&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;tot &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+d3_party_list &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; arrange&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;d3_party_list&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;tot&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# now we only need the party list&lt;/span&gt;
+d3_party_list &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;data.frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;party &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; d3_party_list&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;Party&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+write.csv&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;d3_party_list&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; file&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data_d3/d3_party_list.csv&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; row.names &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;FALSE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; quote &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;FALSE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The map was build with JavaScript and the mighty D3 libraries. The source is in my github repo &lt;a href=&#34;https://github.com/philmassie/election_effort_d3&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -55,7 +488,116 @@ Introduction With South Africa&amp;rsquo;s municipal elections in a few days tim
       <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</guid>
-      <description>Style for changing title colour depending on photo  div.post-heading h1, div.post-heading h2, div.post-heading span.meta { color: midnightblue; }  Introduction This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.</description>
+      <description>
+
+&lt;h1 id=&#34;style-for-changing-title-colour-depending-on-photo&#34;&gt;Style for changing title colour depending on photo&lt;/h1&gt;
+
+&lt;style&gt;
+   div.post-heading h1, 
+   div.post-heading h2, 
+   div.post-heading span.meta {
+    color: midnightblue;
+  }
+&lt;/style&gt;
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.&lt;/p&gt;
+
+&lt;p&gt;In my article I wanted a graphic which illustrated the preferred outward post-moult migration direction of adult female southern elephant seals from Marion Island. In reality it doesn&amp;rsquo;t matter too much what you want to plot, and these sorts of plots are more generally used for wind direction illustrations. Really, they are like radial histograms. In fact, if you look through the ggplot2 call, it is basically a histogram until the last couple of lines, where it is wrapped into a wind rose.&lt;/p&gt;
+
+&lt;h1 id=&#34;the-data&#34;&gt;The data&lt;/h1&gt;
+
+&lt;p&gt;As I mentioned, my data was related to seal swimming directions, gathered from satellite tags. For this tutorial I will simulate 100000 directions using the wrapped normal function (rwrpnorm) from the CircStats package.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ggplot2&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;CircStats&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;kp&#34;&gt;set.seed&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+data &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;data.frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;direction &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; deg&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;rwrpnorm&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;100000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; rad&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;225&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; rho&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0.8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; sd&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)))&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# Take a quick look...&lt;/span&gt;
+hist&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;direction&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; main &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Histogram of hypothetical direction frequencies.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; xlab &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Direction&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; ylab &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Frequency&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;
+&lt;img src=&#34;histo-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+
+&lt;p&gt;That looks like a reasonable distribution of directions, favouring 225°.&lt;/p&gt;
+
+&lt;h1 id=&#34;method&#34;&gt;Method&lt;/h1&gt;
+
+&lt;p&gt;There are various ways to split and plot these data. Some searching lead me &lt;a href=&#34;http://stackoverflow.com/questions/17266780/wind-rose-with-ggplot-r&#34;&gt;to this one&lt;/a&gt;. First we will define the bin width (30°), then we will define dir.breaks which stores the range of each bin as follows 345°-15°, 15°-45°, 45°-75° etc.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# choose bin size (degrees/bin)&lt;/span&gt;
+deg &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt; 
+&lt;span class=&#34;c1&#34;&gt;# define the range of each bin&lt;/span&gt;
+dir.breaks &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;deg&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;360&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;deg&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; deg&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now we generate a factor variable, exchanging the directions with the ranges. We&amp;rsquo;ll also generate some pretty labels and assign them as levels of the new object. Finally we&amp;rsquo;ll attach the new variable to the main dataset.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# assign each direction to a bin range&lt;/span&gt;
+dir.binned &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;cut&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;direction&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                       breaks &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; dir.breaks&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                       ordered_result &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;TRUE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# generate pretty lables&lt;/span&gt;
+dir.labels &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;as.character&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;360&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;deg&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; by &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; deg&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# replace ranges with pretty bin lables&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;levels&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;dir.binned&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; dir.labels
+&lt;span class=&#34;c1&#34;&gt;# Assign bin names to the original data set&lt;/span&gt;
+data&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;dir.binned &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; dir.binned&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h1 id=&#34;plotting&#34;&gt;Plotting&lt;/h1&gt;
+
+&lt;h2 id=&#34;theming&#34;&gt;Theming&lt;/h2&gt;
+
+&lt;p&gt;The important points here are blank values for &lt;code&gt;panel.border&lt;/code&gt; and &lt;code&gt;panel.grid&lt;/code&gt;. This turns off the default background for ggplot2 so that we can define the borders and grids manually later.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;thm &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; theme_bw&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; 
+    theme&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;axis.text.x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          axis.text.y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          axis.title.x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_blank&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt;
+          axis.title.y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; hjust &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.9&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; vjust &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          panel.border &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_blank&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt;
+          panel.grid  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_blank&lt;span class=&#34;p&#34;&gt;())&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;now-the-main-plot&#34;&gt;Now the main plot&amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;The main plot sets things up quite specifically. What we need to know before going on is the frequency of the most common bin.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;kp&#34;&gt;summary&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;dir.binned&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##     0    30    60    90   120   150   180   210   240   270   300   330 
+##    79     1     5    83   884  4993 15875 28134 28403 15751  4926   866
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So there are 28403 counts of the 240° bin. We need this value to set our y-scales correctly. Our y-axis will have breaks every 5000 counts so we&amp;rsquo;ll use 30000 as the max for the y-axis. The first parts of this plot will plot a rectangular histogram, only the &lt;code&gt;coord_polar&lt;/code&gt; function wraps it into a wind rose.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# initialise the plot&lt;/span&gt;
+plt.dirrose &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# since the plot background is blank we&amp;#39;ll add a series of horizontal lines, at 5000 count intervals, up to 25000.&lt;/span&gt;
+    geom_hline&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;yintercept &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;25000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; by &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;5000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; colour &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;grey60&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# Now we add a darker horizontal line as the top border at 30000.&lt;/span&gt;
+    geom_hline&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;yintercept &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; colour &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# We want 12 vertical lines representing the centers of the 30° ranges.&lt;/span&gt;
+    geom_vline&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;xintercept &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;12&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)),&lt;/span&gt; colour &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;grey60&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# On top of everything we place the histogram bars.&lt;/span&gt;
+    geom_bar&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; data&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; dir.binned&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; width &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; alpha&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0.5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; 
+    &lt;span class=&#34;c1&#34;&gt;# Add the x-axis labels&lt;/span&gt;
+    scale_x_discrete&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; drop &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;FALSE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; labels &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;90&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;180&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;270&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# Add the y-axis labels&lt;/span&gt;
+    scale_y_continuous&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;limits &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; expand &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                       breaks &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;5000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;10000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;15000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;20000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;25000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                       labels &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;25&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# Add the axis titles&lt;/span&gt;
+    labs&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;Outward step bearing (°)&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;Count of outward steps (x10³)&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# If you only use the plot code up till here you will get a histogram.&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# the next line wraps the histogram into a windrose&lt;/span&gt;
+    coord_polar&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;start &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;deg&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;pi&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;180&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# apply theme&lt;/span&gt;
+    thm
+
+plt.dirrose&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;
+&lt;img src=&#34;rose-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+
+&lt;p&gt;There we have it; a wind rose, in grey scale illustrating our data exactly as we need it to.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Saving the plot according to the publishers requirements&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;ggsave&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;filename &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;plt.dirrose.png&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; plot &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; plt.dirrose&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; width &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;84&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; height &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;84&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; units&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;mm&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; dpi &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;300&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; type&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;cairo-png&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Hope this helps :)
+&lt;a href=&#34;https://github.com/philmassie/20160630_ggplot2_wind_rose&#34;&gt;github repo&lt;/a&gt;&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -64,8 +606,233 @@ Introduction With South Africa&amp;rsquo;s municipal elections in a few days tim
       <pubDate>Wed, 22 Jun 2016 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20160622/ggplot2_contours/</guid>
-      <description>Introduction Preparing figures for publication can take a long time (well it does for me anyway), and I relied very heavily on numerous online resources to figure out some of the dos and don&amp;rsquo;ts. Obviously I owe massive thanks to the hundreds of blogs and Stack Exchange questions and answers I relied on. Where I can, I will try to link to them.
-Additionally, this tutorial covers a little bit about working with reshaped gridded data, shape files, GeoTIFF data and even a simple homemade polygon.</description>
+      <description>
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;Preparing figures for publication can take a long time (well it does for me anyway), and I relied very heavily on numerous online resources to figure out some of the dos and don&amp;rsquo;ts. Obviously I owe massive thanks to the hundreds of blogs and Stack Exchange questions and answers I relied on. Where I can, I will try to link to them.&lt;/p&gt;
+
+&lt;p&gt;Additionally, this tutorial covers a little bit about working with reshaped gridded data, shape files, GeoTIFF data and even a simple homemade polygon. This then is my contribution to folks trying to get their plots to look the way they need them to.&lt;/p&gt;
+
+&lt;p&gt;As most people know, publishing in colour is way more expensive than in grey scale. The costs were completely prohibitive for myself and my co-authors, so I made efforts to change my beautiful, spectacularly coloured plots, which looked so nice in slide shows, into grey scale.&lt;/p&gt;
+
+&lt;h1 id=&#34;the-data&#34;&gt;The data&lt;/h1&gt;
+
+&lt;p&gt;This plot is showing mean values of the derived variable eddy kinetic (EKE) energy to the south west of Marion Island (in the Southern Ocean) from 2008 to 2010. Interactions between the Antarctic Circumpolar Current and a series of undersea faults in the South West Indian Ridge, give rise to an area of instability, and it is the degree and extent of this instability that I set out to investigate via EKE.&lt;/p&gt;
+
+&lt;p&gt;EKE is derived from u and v components &lt;a href=&#34;http://goo.gl/4c3ccI&#34;&gt;like this&lt;/a&gt;. The friendly folks at &lt;a href=&#34;http://www.aviso.altimetry.fr&#34;&gt;AVISO&lt;/a&gt; have kindly let me use and make available this subset of their data for the purpose of this tutorial. Perhaps if someone is interested I&amp;rsquo;ll make another post showing how I went about the calculations and wrangling.&lt;/p&gt;
+
+&lt;p&gt;If you are interested in this sort of data, please check out AVISO. They make available unfathomable amounts of absolutely beautiful data for free. All you need is an account and it&amp;rsquo;s yours - Honestly access to data like this blows my mind. I wish it was like this with South African regional data&amp;hellip; but that&amp;rsquo;s another story.&lt;/p&gt;
+
+&lt;h1 id=&#34;method&#34;&gt;Method&lt;/h1&gt;
+
+&lt;p&gt;Start by loading all the necessary libraries, setting working directories and loading data. You can download the EKE data set &lt;a href=&#34;https://philmassie.github.io/post/20160622/ggplot2_contours/data.eke.rdata&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;sp&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;rgdal&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;raster&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ggplot2&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;library&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;plyr&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;kp&#34;&gt;load&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;file &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;data/data.eke.rdata&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;head&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.eke&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;##       lon     lat          eke
+## 1 -18.875 -68.625 1.052298e-04
+## 2 -18.875 -68.375 1.009409e-04
+## 3 -18.875 -68.125 7.404519e-05
+## 4 -18.875 -67.875 6.044744e-05
+## 5 -18.875 -67.625 8.102543e-05
+## 6 -18.875 -67.375 9.289138e-05
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# When we derive EKE, grid cells over land produce NaNs, so we must replace them with NAs&lt;/span&gt;
+data.eke&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;eke&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;which&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;is.nan&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.eke&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;eke&lt;span class=&#34;p&#34;&gt;))]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;NA&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;define-our-map-extents&#34;&gt;Define our map extents&lt;/h2&gt;
+
+&lt;p&gt;The EKE data spans from -18.875 E to 43.875 E and -38.88 N to -68.62 N.
+Those are the extents needed for the full study, but it&amp;rsquo;s too much for the plot, so we must subset it.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;latmin &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;-55&lt;/span&gt;
+latmax &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;-43&lt;/span&gt;
+lonmin &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;20&lt;/span&gt;
+lonmax &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;43&lt;/span&gt;
+map.extents &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; extent&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lonmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; lonmax&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; latmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; latmax&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+data.eke.sub &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;subset&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.eke&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                       data.eke&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;lat &lt;span class=&#34;o&#34;&gt;&amp;gt;=&lt;/span&gt; latmin &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;
+                           data.eke&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;lat &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; latmax &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;
+                           data.eke&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;lon &lt;span class=&#34;o&#34;&gt;&amp;gt;=&lt;/span&gt; lonmin &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;
+                           data.eke&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;lon &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; lonmax&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;shape-files&#34;&gt;Shape Files&lt;/h2&gt;
+
+&lt;p&gt;The plot area includes the Prince Edward Islands. Instead of leaving blank, blocky spaces, let&amp;rsquo;s use some shape files to make it look neater. These shape files come from &lt;a href=&#34;http://www.naturalearthdata.com&#34;&gt;http://www.naturalearthdata.com&lt;/a&gt;. They are from the &amp;lsquo;fine scale (1:10), Admin 0 -Countries&amp;rsquo; set available for free from &lt;a href=&#34;http://www.naturalearthdata.com/downloads/10m-cultural-vectors/&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# read in the shape file&lt;/span&gt;
+countries &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; readOGR&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;shapes&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; layer&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;ne_10m_admin_0_countries&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Add an id column to the data slot of countries, based on rownames&lt;/span&gt;
+countries&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;id &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;rownames&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;countries&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;data&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Fortify the spatial polygons for ggplot2 - likes long format data&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# The resulting data frame contains all the spatial data and the id but no information labels.&lt;/span&gt;
+countries.df &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; fortify&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;countries&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Use the id column to join all the label data in countries@data to the new dataframe.&lt;/span&gt;
+countries.df &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; join&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;countries.df&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; countries&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;data&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; by&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Now we can subset the new dataframe to include only South Africa and her Islands and tidy up a bit&lt;/span&gt;
+za &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;subset&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;countries.df&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; countries.df&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;ISO_A2&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;ZA&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;rm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;countries&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; countries.df&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;geotiff&#34;&gt;GeoTIFF&lt;/h2&gt;
+
+&lt;p&gt;The plot needs some bathymetric contour lines. We will use the ETOPO1 data for this via a GeoTIFF. There are higher resolution data sets around (e.g. ETOTPO2 and GEBCO) but ETOPO1 will suffice for this application. The ETOPO1 data is (freely?) available from &lt;a href=&#34;http://www.ngdc.noaa.gov/mgg/global/global.html&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Load up the geotiff&lt;/span&gt;
+etopo1.full &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; raster&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;etopo/ETOPO1_Ice_c_geotiff.tif&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Crop out our ROI&lt;/span&gt;
+etopo.crop &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; crop&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;etopo1.full&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; map.extents&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Prepare for ggplot2 (long format) and tidy up a bit&lt;/span&gt;
+etopo.crop.df &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;as.data.frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;etopo.crop&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; xy&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;TRUE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;names&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;etopo.crop.df&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;long&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;lat&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;z&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;rm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;etopo1.full&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;polygon&#34;&gt;Polygon&lt;/h2&gt;
+
+&lt;p&gt;Lastly we&amp;rsquo;ll build a simple polygon to demarcate an area we consider within the region of elevated EKE (eddy field).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Define extents&lt;/span&gt;
+eflatmin &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;-53&lt;/span&gt;
+eflatmax &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;-47.33&lt;/span&gt;
+eflonmin &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;27.33&lt;/span&gt;
+eflonmax &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;37.66&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# bind the data into sequential coordinates, outlining the new polygon and generate a polygon.&lt;/span&gt;
+ef.coords &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;cbind&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;eflonmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eflonmax&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eflonmax&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eflonmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eflonmin&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+                   &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;eflatmax&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eflatmax&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eflatmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eflatmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eflatmax&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+ef.poly &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; Polygon&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ef.coords&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Prepare for ggplot2 and tidy up&lt;/span&gt;
+ef.df &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; fortify&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ef.poly&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# set an individual group for plotting&lt;/span&gt;
+ef.df&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;group &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;
+&lt;span class=&#34;kp&#34;&gt;rm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;ef.coords&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; ef.poly&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h1 id=&#34;plot-time&#34;&gt;Plot time&lt;/h1&gt;
+
+&lt;p&gt;Finally we have all the bits in place so we can build a plot. We&amp;rsquo;ll start with the colourful version, and then see how to refine it to a grey scale contoured version.&lt;/p&gt;
+
+&lt;h2 id=&#34;preliminaries&#34;&gt;Preliminaries&lt;/h2&gt;
+
+&lt;p&gt;We start by defining the plot label positions and text and then set some custom theme stuff. See &lt;a href=&#34;http://docs.ggplot2.org/current/theme.html&#34;&gt;here&lt;/a&gt; for more on theming.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# define some lables and their coordinates&lt;/span&gt;
+lbl &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;data.frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;40&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;36&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;37.1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;22.5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+                  y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;-46.5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;-53.4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;-50&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;-45&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;-51.5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+                  txt &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Marion Island&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Eddy Field&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;SWIR&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;SWIR&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Define the theme data as I like it for these plots...&lt;/span&gt;
+thm &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; theme_bw&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; 
+    theme&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;axis.text.x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          axis.text.y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          axis.title.x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          axis.title.y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          axis.ticks.x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_line&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          axis.ticks.y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_line&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;          
+          legend.key.height &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; unit&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;13&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; units&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;mm&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          legend.text &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          legend.title &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; angle &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;90&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; vjust &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; face &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+          legend.title.align &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+          panel.border &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; element_rect&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;colour &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; fill&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;NA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;coloured-tiles-plot&#34;&gt;Coloured tiles plot&lt;/h2&gt;
+
+&lt;p&gt;Ggplot2 is even more awesome than anything you might have read, but it can be intimidating (I find). The best I can suggest is to keep playing and you&amp;rsquo;ll start to get a handle on. One of the biggest difficulties for me was figuring out what order the layers should be in. This is where I ended up. I&amp;rsquo;d like to tell you that I had figured out an overriding set of rules, but there was some trial and error involved.&lt;/p&gt;
+
+&lt;p&gt;I have tried to comment the coloured plot extensively.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# initiate the plot&lt;/span&gt;
+plot.eke.colour &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# include a layer with the eke data as coloured tile data&lt;/span&gt;
+    geom_tile&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;data.eke.sub&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;y&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;fill&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;eke&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# include the shape file data&lt;/span&gt;
+    geom_polygon&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; za&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; group &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; group&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                 colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; fill&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;white&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; alpha&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; 
+    &lt;span class=&#34;c1&#34;&gt;# include the home made polygon data&lt;/span&gt;
+    geom_polygon&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ef.df&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; group&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;group&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                 colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; fill&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;white&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; alpha&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; linetype&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;dashed&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# include the bathymetry data with geom_contour. Define a single custom break&lt;/span&gt;
+    geom_contour&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;etopo.crop.df&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;y&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;z&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;z&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                 breaks&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;-3000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# axis lables&lt;/span&gt;
+    labs&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;Longitude (ºE)&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;Latitude (ºN)&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# map projection - boring choice but suits the task at hand&lt;/span&gt;
+    coord_map&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;mercator&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# this trims unwanted whitespace around the plot&lt;/span&gt;
+    coord_fixed&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;xlim &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lonmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; lonmax&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; ylim &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;latmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; latmax&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; expand &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;FALSE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# change the default EKE colour to more traditional rainbow colours (oceanography etc)&lt;/span&gt;
+    scale_fill_gradientn&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;colours &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;rev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;rainbow&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;7&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; end&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;6&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)),&lt;/span&gt; 
+                         space &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Lab&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; 
+                         guide &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; guide_colorbar&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;title&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Eddy kinetic energy (cm²/s²)&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; 
+                                                title.position&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;right&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# include the lables defined earlier&lt;/span&gt;
+    geom_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;lbl&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;x&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;y&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; label&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;txt&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;rel&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;white&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; fontface&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;bold&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; alpha &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    geom_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;lbl&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;x&lt;span class=&#34;m&#34;&gt;+0.01&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;y&lt;span class=&#34;m&#34;&gt;+0.01&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; label&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;txt&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;rel&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; fontface&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;bold&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# include the theme settings&lt;/span&gt;
+    thm
+plot.eke.colour&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+
+&lt;p&gt;That looks pretty good. Unfortunately when we save the file, things don&amp;rsquo;t always look the same as they do on the screen so there is generally some fine tuning involved. This version, as it stands, makes rather a good print. The colour palette is familiar to all my MATLAB/Python oceanographic colleagues too.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Saving the plot according to the publishers requirements&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;ggsave&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;filename &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;plot.eke.colour.png&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; plot &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; plot.eke.colour&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; width &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;174&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; height &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;105&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; units&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;mm&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; dpi &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;300&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; type&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;cairo-png&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;greyscale-contoured-plot&#34;&gt;Greyscale contoured plot&lt;/h2&gt;
+
+&lt;p&gt;If we just jump in and plot the existing data using the stat_contour() approach we immediately hit a problem. It&amp;rsquo;s a little difficult to explain, but easy enough to understand if you play around a bit. I&amp;rsquo;ll try my best.&lt;/p&gt;
+
+&lt;p&gt;Some of the contoured values exist as closed polygons within the plot frame. These plot as we would expect. Unfortunately, other contoured values are (now) polylines. These lines would have closed somewhere outside of the plot extents, but were cropped, resulting in open polygons/polylines. As a result, ggplot2 can&amp;rsquo;t fill them with shading as required. Ggplot2 closes them automatically by joining their ends. This is pretty catastrophic. You can see what happens for yourself by exchanging &lt;code&gt;data.eke.sub.contour&lt;/code&gt; for &lt;code&gt;data.eke.sub&lt;/code&gt; in the plot code below.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Calculate a low arbitrary value&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;To avoid this we need to add extra, make-believe EKE data just outside the plotting frame. We set this to a low, arbitrary value which allows ggplot2 to close off the contour polygons which we are interested in. What the arbitrary value is, is not &lt;em&gt;that&lt;/em&gt; important, as long as it is lower than everything else. I found this approach on &lt;a href=&#34;http://stackoverflow.com/questions/28469829/how-to-fill-in-the-contour-fully-using-stat-contour&#34;&gt;stackoverflow here&lt;/a&gt;. It looks at the data spread, divides it into n bins and sets an arbitrary value according to the lowest value minus the bin width * 1.5.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;bins &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;50&lt;/span&gt;
+bin.width &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;diff&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;na.omit&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.eke.sub&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;eke&lt;span class=&#34;p&#34;&gt;)))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; bins
+arbitary.value &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;min&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;na.omit&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.eke.sub&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;eke&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; bin.width &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1.5&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# Build some data frames representing 1 degree of extra EKE data in each direction, with the arbitrary value as EKE&lt;/span&gt;
+min &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;sapply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.eke.sub&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;min&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; na.rm &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;TRUE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+max &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;sapply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.eke.sub&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; na.rm &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;TRUE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+seq.lat &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;min&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#39;lat&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#39;lat&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.25&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+seq.lon &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;min&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#39;lon&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#39;lon&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.25&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+west.edge &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;data.frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lon &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;rep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;min&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#39;lon&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;seq.lat&lt;span class=&#34;p&#34;&gt;)),&lt;/span&gt; lat &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; seq.lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eke &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; arbitary.value&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+east.edge &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;data.frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lon &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;rep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#39;lon&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;seq.lat&lt;span class=&#34;p&#34;&gt;)),&lt;/span&gt; lat &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; seq.lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; eke &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; arbitary.value&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+south.edge &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;data.frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lon &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; seq.lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; lat &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;rep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;min&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#39;lat&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;seq.lon&lt;span class=&#34;p&#34;&gt;)),&lt;/span&gt; eke &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; arbitary.value&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+north.edge &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;data.frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lon &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; seq.lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; lat &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;rep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kp&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#39;lat&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;seq.lon&lt;span class=&#34;p&#34;&gt;)),&lt;/span&gt; eke &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; arbitary.value&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# rbind the new data to the existing data and tidy up&lt;/span&gt;
+data.eke.sub.contour &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;rbind&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data.eke.sub&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; west.edge&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; east.edge&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; north.edge&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; south.edge&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;kp&#34;&gt;rm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;bins&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; bin.width&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; arbitary.value&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;min&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; seq.lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; seq.lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; west.edge&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; east.edge&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; north.edge&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; south.edge&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Now we plot&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, with our newly padded dataset, we can complete the greyscale plot. I&amp;rsquo;ve only commented the changed lines in this plot (vs. the colour plot above).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;plot.eke.contour.grey &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# This line denotes the newly padded data, as a contour statistic.&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# ..level.. indicates that the fill aesthetic is calculated by the contour statistic.&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# breaks manually define which contours we want to keep.&lt;/span&gt;
+    stat_contour&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; data.eke.sub.contour&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; lon&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; z &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; eke&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; fill &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;..&lt;/span&gt;level..&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                 geom &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;polygon&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; breaks &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.02&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.04&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.06&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.08&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    geom_polygon&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; za&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; group &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; group&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                 colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; fill&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;white&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; alpha&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; 
+    geom_polygon&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ef.df&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; group&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;group&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; 
+                 colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; fill&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;white&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; alpha&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; linetype&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;dashed&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    geom_contour&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;etopo.crop.df&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;long&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;y&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;lat&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;z&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;z&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; breaks&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;-3000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;black&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    coord_map&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;mercator&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    coord_fixed&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;xlim &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;lonmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; lonmax&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; ylim &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;latmin&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; latmax&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; expand &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;FALSE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    labs&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;Longitude (ºE)&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;Latitude (ºN)&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# Here the grey scale colours are defined for the plot and the legend&lt;/span&gt;
+    scale_fill_gradient&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;low &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;gray25&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; high &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;gray95&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                        space &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Lab&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; 
+                        guide &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; guide_colorbar&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;title&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Eddy kinetic energy (cm²/s²)&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; title.position&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;right&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    geom_text&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;lbl&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; aes&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;x&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;x&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; y&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;y&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; label&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;txt&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; size&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;rel&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; colour&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;white&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
+    thm
+plot.eke.contour.grey&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;greyscale_plot-1.png&#34; alt=&#34;&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+
+&lt;p&gt;There we go! The contours look great. There aren&amp;rsquo;t too many of them, they don&amp;rsquo;t have distracting borders, the 3000 m bathymetry contour looks nice and isn&amp;rsquo;t overly distracting.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Saving the plot according to the publishers requirements&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;ggsave&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;filename &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#39;plot.eke.contour.grey.png&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; plot &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; plot.eke.contour.grey&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; width &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;174&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; height &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;105&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; units&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;mm&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; dpi &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;300&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; type&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;cairo-png&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I hope this helps someone :)
+&lt;a href=&#34;https://github.com/philmassie/20160622_ggplot2_contours&#34;&gt;Github repo&lt;/a&gt;&lt;/p&gt;
+</description>
     </item>
     
   </channel>

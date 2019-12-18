@@ -209,127 +209,95 @@
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li><a href="#style-for-changing-title-colour-depending-on-photo">Style for changing title colour depending on photo</a></li>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#the-data">The data</a></li>
-<li><a href="#method">Method</a></li>
-<li><a href="#plotting">Plotting</a>
-<ul>
-<li><a href="#theming">Theming</a></li>
-<li><a href="#now-the-main-plot">Now the main plot&hellip;</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#theming">Theming</a></li>
+    <li><a href="#now-the-main-plot">Now the main plot&hellip;</a></li>
+  </ul>
 </nav>
                 
-                
-
-<h1 id="style-for-changing-title-colour-depending-on-photo">Style for changing title colour depending on photo</h1>
-
-<style>
-   div.post-heading h1, 
-   div.post-heading h2, 
-   div.post-heading span.meta {
-    color: midnightblue;
-  }
-</style>
-
+                <h1 id="style-for-changing-title-colour-depending-on-photo">Style for changing title colour depending on photo</h1>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
 <h1 id="introduction">Introduction</h1>
-
 <p>This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.</p>
-
-<p>In my article I wanted a graphic which illustrated the preferred outward post-moult migration direction of adult female southern elephant seals from Marion Island. In reality it doesn&rsquo;t matter too much what you want to plot, and these sorts of plots are more generally used for wind direction illustrations. Really, they are like radial histograms. In fact, if you look through the ggplot2 call, it is basically a histogram until the last couple of lines, where it is wrapped into a wind rose.</p>
-
+<p>In my article I wanted a graphic which illustrated the preferred outward post-moult migration direction of adult female southern elephant seals from Marion Island. In reality it doesn't matter too much what you want to plot, and these sorts of plots are more generally used for wind direction illustrations. Really, they are like radial histograms. In fact, if you look through the ggplot2 call, it is basically a histogram until the last couple of lines, where it is wrapped into a wind rose.</p>
 <h1 id="the-data">The data</h1>
-
 <p>As I mentioned, my data was related to seal swimming directions, gathered from satellite tags. For this tutorial I will simulate 100000 directions using the wrapped normal function (rwrpnorm) from the CircStats package.</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>ggplot2<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>CircStats<span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="nf">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">CircStats</span><span class="p">)</span>
 
-<span class="kp">set.seed</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
-data <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>direction <span class="o">=</span> deg<span class="p">(</span>rwrpnorm<span class="p">(</span><span class="m">100000</span><span class="p">,</span> rad<span class="p">(</span><span class="m">225</span><span class="p">),</span> rho<span class="o">=</span><span class="m">0.8</span><span class="p">,</span> sd<span class="o">=</span><span class="m">1</span><span class="p">)))</span>
+<span class="nf">set.seed</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="nf">deg</span><span class="p">(</span><span class="nf">rwrpnorm</span><span class="p">(</span><span class="m">100000</span><span class="p">,</span> <span class="nf">rad</span><span class="p">(</span><span class="m">225</span><span class="p">)</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="m">0.8</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="p">)</span><span class="p">)</span>
 
 <span class="c1"># Take a quick look...</span>
-hist<span class="p">(</span>data<span class="o">$</span>direction<span class="p">,</span> main <span class="o">=</span> <span class="s">&#34;Histogram of hypothetical direction frequencies.&#34;</span><span class="p">,</span> xlab <span class="o">=</span> <span class="s">&#34;Direction&#34;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&#34;Frequency&#34;</span><span class="p">)</span></code></pre></div>
-<p><img src="coloured_plot-1.png" alt="" /><!-- -->
-<img src="histo-1.png" alt="" /><!-- --></p>
-
+<span class="nf">hist</span><span class="p">(</span><span class="n">data</span><span class="o">$</span><span class="n">direction</span><span class="p">,</span> <span class="n">main</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">Histogram of hypothetical direction frequencies.&#34;</span><span class="p">,</span> <span class="n">xlab</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">Direction&#34;</span><span class="p">,</span> <span class="n">ylab</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">Frequency&#34;</span><span class="p">)</span>
+</code></pre></div><p><img src="histo-1.png" alt=""><!-- raw HTML omitted --></p>
 <p>That looks like a reasonable distribution of directions, favouring 225°.</p>
-
 <h1 id="method">Method</h1>
-
 <p>There are various ways to split and plot these data. Some searching lead me <a href="http://stackoverflow.com/questions/17266780/wind-rose-with-ggplot-r">to this one</a>. First we will define the bin width (30°), then we will define dir.breaks which stores the range of each bin as follows 345°-15°, 15°-45°, 45°-75° etc.</p>
 <div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># choose bin size (degrees/bin)</span>
-deg <span class="o">&lt;-</span> <span class="m">30</span> 
+<span class="n">deg</span> <span class="o">&lt;-</span> <span class="m">30</span> 
 <span class="c1"># define the range of each bin</span>
-dir.breaks <span class="o">&lt;-</span> <span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="o">-</span><span class="p">(</span>deg<span class="o">/</span><span class="m">2</span><span class="p">),</span> <span class="m">360</span><span class="o">+</span><span class="p">(</span>deg<span class="o">/</span><span class="m">2</span><span class="p">),</span> deg<span class="p">)</span></code></pre></div>
-<p>Now we generate a factor variable, exchanging the directions with the ranges. We&rsquo;ll also generate some pretty labels and assign them as levels of the new object. Finally we&rsquo;ll attach the new variable to the main dataset.</p>
+<span class="n">dir.breaks</span> <span class="o">&lt;-</span> <span class="nf">seq</span><span class="p">(</span><span class="m">0</span><span class="o">-</span><span class="p">(</span><span class="n">deg</span><span class="o">/</span><span class="m">2</span><span class="p">)</span><span class="p">,</span> <span class="m">360</span><span class="o">+</span><span class="p">(</span><span class="n">deg</span><span class="o">/</span><span class="m">2</span><span class="p">)</span><span class="p">,</span> <span class="n">deg</span><span class="p">)</span>
+</code></pre></div><p>Now we generate a factor variable, exchanging the directions with the ranges. We'll also generate some pretty labels and assign them as levels of the new object. Finally we'll attach the new variable to the main dataset.</p>
 <div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># assign each direction to a bin range</span>
-dir.binned <span class="o">&lt;-</span> <span class="kp">cut</span><span class="p">(</span>data<span class="o">$</span>direction<span class="p">,</span>
-                       breaks <span class="o">=</span> dir.breaks<span class="p">,</span>
-                       ordered_result <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+<span class="n">dir.binned</span> <span class="o">&lt;-</span> <span class="nf">cut</span><span class="p">(</span><span class="n">data</span><span class="o">$</span><span class="n">direction</span><span class="p">,</span>
+                       <span class="n">breaks</span> <span class="o">=</span> <span class="n">dir.breaks</span><span class="p">,</span>
+                       <span class="n">ordered_result</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
 <span class="c1"># generate pretty lables</span>
-dir.labels <span class="o">&lt;-</span> <span class="kp">as.character</span><span class="p">(</span><span class="kt">c</span><span class="p">(</span><span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">360</span><span class="o">-</span>deg<span class="p">,</span> by <span class="o">=</span> deg<span class="p">),</span> <span class="m">0</span><span class="p">))</span>
+<span class="n">dir.labels</span> <span class="o">&lt;-</span> <span class="nf">as.character</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="nf">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">360</span><span class="o">-</span><span class="n">deg</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="n">deg</span><span class="p">)</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span><span class="p">)</span>
 <span class="c1"># replace ranges with pretty bin lables</span>
-<span class="kp">levels</span><span class="p">(</span>dir.binned<span class="p">)</span> <span class="o">&lt;-</span> dir.labels
+<span class="nf">levels</span><span class="p">(</span><span class="n">dir.binned</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="n">dir.labels</span>
 <span class="c1"># Assign bin names to the original data set</span>
-data<span class="o">$</span>dir.binned <span class="o">&lt;-</span> dir.binned</code></pre></div>
-<h1 id="plotting">Plotting</h1>
-
+<span class="n">data</span><span class="o">$</span><span class="n">dir.binned</span> <span class="o">&lt;-</span> <span class="n">dir.binned</span>
+</code></pre></div><h1 id="plotting">Plotting</h1>
 <h2 id="theming">Theming</h2>
-
 <p>The important points here are blank values for <code>panel.border</code> and <code>panel.grid</code>. This turns off the default background for ggplot2 so that we can define the borders and grids manually later.</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r">thm <span class="o">&lt;-</span> theme_bw<span class="p">()</span> <span class="o">+</span> 
-    theme<span class="p">(</span>axis.text.x <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
-          axis.text.y <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
-          axis.title.x <span class="o">=</span> element_blank<span class="p">(),</span>
-          axis.title.y <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">,</span> hjust <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> vjust <span class="o">=</span> <span class="m">1.3</span><span class="p">),</span>
-          panel.border <span class="o">=</span> element_blank<span class="p">(),</span>
-          panel.grid  <span class="o">=</span> element_blank<span class="p">())</span></code></pre></div>
-<h2 id="now-the-main-plot">Now the main plot&hellip;</h2>
-
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">thm</span> <span class="o">&lt;-</span> <span class="nf">theme_bw</span><span class="p">(</span><span class="p">)</span> <span class="o">+</span> 
+    <span class="nf">theme</span><span class="p">(</span><span class="n">axis.text.x</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">face</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">plain&#34;</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">axis.text.y</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">face</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">plain&#34;</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">axis.title.x</span> <span class="o">=</span> <span class="nf">element_blank</span><span class="p">(</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">axis.title.y</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">face</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">plain&#34;</span><span class="p">,</span> <span class="n">hjust</span> <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> <span class="n">vjust</span> <span class="o">=</span> <span class="m">1.3</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">panel.border</span> <span class="o">=</span> <span class="nf">element_blank</span><span class="p">(</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">panel.grid</span>  <span class="o">=</span> <span class="nf">element_blank</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+</code></pre></div><h2 id="now-the-main-plot">Now the main plot&hellip;</h2>
 <p>The main plot sets things up quite specifically. What we need to know before going on is the frequency of the most common bin.</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="kp">summary</span><span class="p">(</span>dir.binned<span class="p">)</span></code></pre></div>
-<pre><code>##     0    30    60    90   120   150   180   210   240   270   300   330 
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="nf">summary</span><span class="p">(</span><span class="n">dir.binned</span><span class="p">)</span>
+</code></pre></div><pre><code>##     0    30    60    90   120   150   180   210   240   270   300   330 
 ##    79     1     5    83   884  4993 15875 28134 28403 15751  4926   866
-</code></pre>
-
-<p>So there are 28403 counts of the 240° bin. We need this value to set our y-scales correctly. Our y-axis will have breaks every 5000 counts so we&rsquo;ll use 30000 as the max for the y-axis. The first parts of this plot will plot a rectangular histogram, only the <code>coord_polar</code> function wraps it into a wind rose.</p>
+</code></pre><p>So there are 28403 counts of the 240° bin. We need this value to set our y-scales correctly. Our y-axis will have breaks every 5000 counts so we'll use 30000 as the max for the y-axis. The first parts of this plot will plot a rectangular histogram, only the <code>coord_polar</code> function wraps it into a wind rose.</p>
 <div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># initialise the plot</span>
-plt.dirrose <span class="o">&lt;-</span> ggplot<span class="p">()</span> <span class="o">+</span>
+<span class="n">plt.dirrose</span> <span class="o">&lt;-</span> <span class="nf">ggplot</span><span class="p">(</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># since the plot background is blank we&#39;ll add a series of horizontal lines, at 5000 count intervals, up to 25000.</span>
-    geom_hline<span class="p">(</span>yintercept <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">25000</span><span class="p">,</span> by <span class="o">=</span> <span class="m">5000</span><span class="p">),</span> colour <span class="o">=</span> <span class="s">&#34;grey60&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_hline</span><span class="p">(</span><span class="n">yintercept</span> <span class="o">=</span> <span class="nf">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">25000</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="m">5000</span><span class="p">)</span><span class="p">,</span> <span class="n">colour</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">grey60&#34;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># Now we add a darker horizontal line as the top border at 30000.</span>
-    geom_hline<span class="p">(</span>yintercept <span class="o">=</span> <span class="m">30000</span><span class="p">,</span> colour <span class="o">=</span> <span class="s">&#34;black&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_hline</span><span class="p">(</span><span class="n">yintercept</span> <span class="o">=</span> <span class="m">30000</span><span class="p">,</span> <span class="n">colour</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># We want 12 vertical lines representing the centers of the 30° ranges.</span>
-    geom_vline<span class="p">(</span>xintercept <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="kp">seq</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">12</span><span class="p">,</span><span class="m">1</span><span class="p">)),</span> colour <span class="o">=</span> <span class="s">&#34;grey60&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="nf">seq</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">12</span><span class="p">,</span><span class="m">1</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">colour</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">grey60&#34;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># On top of everything we place the histogram bars.</span>
-    geom_bar<span class="p">(</span>data <span class="o">=</span> data<span class="p">,</span> aes<span class="p">(</span>x <span class="o">=</span> dir.binned<span class="p">),</span> width <span class="o">=</span> <span class="m">1</span><span class="p">,</span> colour<span class="o">=</span><span class="s">&#34;black&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span> alpha<span class="o">=</span><span class="m">0.5</span><span class="p">)</span> <span class="o">+</span> 
+    <span class="nf">geom_bar</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">dir.binned</span><span class="p">)</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="m">0.5</span><span class="p">)</span> <span class="o">+</span> 
     <span class="c1"># Add the x-axis labels</span>
-    scale_x_discrete<span class="p">(</span> drop <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> labels <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="m">90</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="m">180</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="m">270</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">))</span> <span class="o">+</span>
+    <span class="nf">scale_x_discrete</span><span class="p">(</span> <span class="n">drop</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">&#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">&#34;</span><span class="p">,</span> <span class="m">90</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">&#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">&#34;</span><span class="p">,</span> <span class="m">180</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">&#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">&#34;</span><span class="p">,</span> <span class="m">270</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">&#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">&#34;</span><span class="p">)</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># Add the y-axis labels</span>
-    scale_y_continuous<span class="p">(</span>limits <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">30000</span><span class="p">),</span> expand <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">),</span> 
-                       breaks <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">5000</span><span class="p">,</span> <span class="m">10000</span><span class="p">,</span> <span class="m">15000</span><span class="p">,</span> <span class="m">20000</span><span class="p">,</span> <span class="m">25000</span><span class="p">,</span> <span class="m">30000</span><span class="p">),</span> 
-                       labels <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">15</span><span class="p">,</span> <span class="m">20</span><span class="p">,</span> <span class="m">25</span><span class="p">,</span> <span class="m">30</span><span class="p">))</span> <span class="o">+</span>
+    <span class="nf">scale_y_continuous</span><span class="p">(</span><span class="n">limits</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">30000</span><span class="p">)</span><span class="p">,</span> <span class="n">expand</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span><span class="p">,</span> 
+                       <span class="n">breaks</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">5000</span><span class="p">,</span> <span class="m">10000</span><span class="p">,</span> <span class="m">15000</span><span class="p">,</span> <span class="m">20000</span><span class="p">,</span> <span class="m">25000</span><span class="p">,</span> <span class="m">30000</span><span class="p">)</span><span class="p">,</span> 
+                       <span class="n">labels</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">15</span><span class="p">,</span> <span class="m">20</span><span class="p">,</span> <span class="m">25</span><span class="p">,</span> <span class="m">30</span><span class="p">)</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># Add the axis titles</span>
-    labs<span class="p">(</span>x <span class="o">=</span> <span class="s">&#39;Outward step bearing (°)&#39;</span><span class="p">,</span> y <span class="o">=</span> <span class="s">&#39;Count of outward steps (x10³)&#39;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s">&#39;</span><span class="s">Outward step bearing (°)&#39;</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="s">&#39;</span><span class="s">Count of outward steps (x10³)&#39;</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># If you only use the plot code up till here you will get a histogram.</span>
     <span class="c1"># the next line wraps the histogram into a windrose</span>
-    coord_polar<span class="p">(</span>start <span class="o">=</span> <span class="o">-</span><span class="p">(</span>deg<span class="o">/</span><span class="m">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="kc">pi</span><span class="o">/</span><span class="m">180</span><span class="p">))</span> <span class="o">+</span>
+    <span class="nf">coord_polar</span><span class="p">(</span><span class="n">start</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">deg</span><span class="o">/</span><span class="m">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="kc">pi</span><span class="o">/</span><span class="m">180</span><span class="p">)</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># apply theme</span>
-    thm
+    <span class="n">thm</span>
 
-plt.dirrose</code></pre></div>
-<p><img src="coloured_plot-1.png" alt="" /><!-- -->
-<img src="rose-1.png" alt="" /><!-- --></p>
-
+<span class="n">plt.dirrose</span>
+</code></pre></div><p><img src="coloured_plot-1.png" alt=""><!-- raw HTML omitted -->
+<img src="rose-1.png" alt=""><!-- raw HTML omitted --></p>
 <p>There we have it; a wind rose, in grey scale illustrating our data exactly as we need it to.</p>
-
-<p><strong><em>Saving the plot according to the publishers requirements</em></strong></p>
-
+<p><em><strong>Saving the plot according to the publishers requirements</strong></em></p>
 <p>For completeness, this is one approach to saving your plots</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r">ggsave<span class="p">(</span>filename <span class="o">=</span> <span class="s">&#39;plt.dirrose.png&#39;</span><span class="p">,</span> plot <span class="o">=</span> plt.dirrose<span class="p">,</span> width <span class="o">=</span> <span class="m">84</span><span class="p">,</span> height <span class="o">=</span> <span class="m">84</span><span class="p">,</span> units<span class="o">=</span><span class="s">&#34;mm&#34;</span><span class="p">,</span> dpi <span class="o">=</span> <span class="m">300</span><span class="p">,</span> type<span class="o">=</span><span class="s">&#34;cairo-png&#34;</span><span class="p">)</span></code></pre></div>
-<p>Hope this helps :)
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="nf">ggsave</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;</span><span class="s">plt.dirrose.png&#39;</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="n">plt.dirrose</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="m">84</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="m">84</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s">&#34;</span><span class="s">mm&#34;</span><span class="p">,</span> <span class="n">dpi</span> <span class="o">=</span> <span class="m">300</span><span class="p">,</span> <span class="n">type</span><span class="o">=</span><span class="s">&#34;</span><span class="s">cairo-png&#34;</span><span class="p">)</span>
+</code></pre></div><p>Hope this helps :)
 <a href="https://github.com/philmassie/20160630_ggplot2_wind_rose">github repo</a></p>
 
 
@@ -403,19 +371,15 @@ plt.dirrose</code></pre></div>
                         
                         
                         
-                        <a href="/tags/r" title="R">
-                            R
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/data-science" title="data-science">
+                            data-science
                         </a>
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
                         
                         
                         
@@ -429,6 +393,28 @@ plt.dirrose</code></pre></div>
                         
                         <a href="/tags/greyscale" title="greyscale">
                             greyscale
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/machine-learning" title="machine-learning">
+                            machine-learning
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/r" title="r">
+                            r
                         </a>
                         
                         
@@ -455,8 +441,6 @@ plt.dirrose</code></pre></div>
                         
                         <li><a target="_blank" href="https://medium.com/@kirshnee.m">Kirshnee Bhagwandas</a></li>
                         
-                        <li><a target="_blank" href="https://www.lentilcurtain.com/">Glenn Moncrieff</a></li>
-                        
                     </ul>
                 </section>
                 
@@ -473,15 +457,6 @@ plt.dirrose</code></pre></div>
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <ul class="list-inline text-center">
-                   
-                   <li>
-                       <a href="" rel="alternate" type="application/rss+xml" title="Kabelsalat" >
-                           <span class="fa-stack fa-lg">
-                               <i class="fa fa-circle fa-stack-2x"></i>
-                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
-                           </span>
-                       </a>
-                   </li>
                    
                     
                     <li>

@@ -209,250 +209,213 @@
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#the-data">The data</a></li>
-<li><a href="#method">Method</a>
-<ul>
-<li><a href="#define-our-map-extents">Define our map extents</a></li>
-<li><a href="#shape-files">Shape Files</a></li>
-<li><a href="#geotiff">GeoTIFF</a></li>
-<li><a href="#polygon">Polygon</a></li>
-</ul></li>
-<li><a href="#plot-time">Plot time</a>
-<ul>
-<li><a href="#preliminaries">Preliminaries</a></li>
-<li><a href="#coloured-tiles-plot">Coloured tiles plot</a></li>
-<li><a href="#greyscale-contoured-plot">Greyscale contoured plot</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#define-our-map-extents">Define our map extents</a></li>
+    <li><a href="#shape-files">Shape Files</a></li>
+    <li><a href="#geotiff">GeoTIFF</a></li>
+    <li><a href="#polygon">Polygon</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#preliminaries">Preliminaries</a></li>
+    <li><a href="#coloured-tiles-plot">Coloured tiles plot</a></li>
+    <li><a href="#greyscale-contoured-plot">Greyscale contoured plot</a></li>
+  </ul>
 </nav>
                 
-                
-
-<h1 id="introduction">Introduction</h1>
-
-<p>Preparing figures for publication can take a long time (well it does for me anyway), and I relied very heavily on numerous online resources to figure out some of the dos and don&rsquo;ts. Obviously I owe massive thanks to the hundreds of blogs and Stack Exchange questions and answers I relied on. Where I can, I will try to link to them.</p>
-
+                <h1 id="introduction">Introduction</h1>
+<p>Preparing figures for publication can take a long time (well it does for me anyway), and I relied very heavily on numerous online resources to figure out some of the dos and don'ts. Obviously I owe massive thanks to the hundreds of blogs and Stack Exchange questions and answers I relied on. Where I can, I will try to link to them.</p>
 <p>Additionally, this tutorial covers a little bit about working with reshaped gridded data, shape files, GeoTIFF data and even a simple homemade polygon. This then is my contribution to folks trying to get their plots to look the way they need them to.</p>
-
 <p>As most people know, publishing in colour is way more expensive than in grey scale. The costs were completely prohibitive for myself and my co-authors, so I made efforts to change my beautiful, spectacularly coloured plots, which looked so nice in slide shows, into grey scale.</p>
-
 <h1 id="the-data">The data</h1>
-
 <p>This plot is showing mean values of the derived variable eddy kinetic (EKE) energy to the south west of Marion Island (in the Southern Ocean) from 2008 to 2010. Interactions between the Antarctic Circumpolar Current and a series of undersea faults in the South West Indian Ridge, give rise to an area of instability, and it is the degree and extent of this instability that I set out to investigate via EKE.</p>
-
-<p>EKE is derived from u and v components <a href="http://goo.gl/4c3ccI">like this</a>. The friendly folks at <a href="http://www.aviso.altimetry.fr">AVISO</a> have kindly let me use and make available this subset of their data for the purpose of this tutorial. Perhaps if someone is interested I&rsquo;ll make another post showing how I went about the calculations and wrangling.</p>
-
-<p>If you are interested in this sort of data, please check out AVISO. They make available unfathomable amounts of absolutely beautiful data for free. All you need is an account and it&rsquo;s yours - Honestly access to data like this blows my mind. I wish it was like this with South African regional data&hellip; but that&rsquo;s another story.</p>
-
+<p>EKE is derived from u and v components <a href="http://goo.gl/4c3ccI">like this</a>. The friendly folks at <a href="http://www.aviso.altimetry.fr">AVISO</a> have kindly let me use and make available this subset of their data for the purpose of this tutorial. Perhaps if someone is interested I'll make another post showing how I went about the calculations and wrangling.</p>
+<p>If you are interested in this sort of data, please check out AVISO. They make available unfathomable amounts of absolutely beautiful data for free. All you need is an account and it's yours - Honestly access to data like this blows my mind. I wish it was like this with South African regional data&hellip; but that's another story.</p>
 <h1 id="method">Method</h1>
-
 <p>Start by loading all the necessary libraries, setting working directories and loading data. You can download the EKE data set <a href="/post/20160622/ggplot2_contours/data.eke.rdata">here</a>.</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>sp<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>rgdal<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>raster<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>ggplot2<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>plyr<span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="nf">library</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">rgdal</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">plyr</span><span class="p">)</span>
 
-<span class="kp">load</span><span class="p">(</span>file <span class="o">=</span> <span class="s">&#34;data/data.eke.rdata&#34;</span><span class="p">)</span>
-<span class="kp">head</span><span class="p">(</span>data.eke<span class="p">)</span></code></pre></div>
-<pre><code>##       lon     lat          eke
+<span class="nf">load</span><span class="p">(</span><span class="n">file</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">data/data.eke.rdata&#34;</span><span class="p">)</span>
+<span class="nf">head</span><span class="p">(</span><span class="n">data.eke</span><span class="p">)</span>
+</code></pre></div><pre><code>##       lon     lat          eke
 ## 1 -18.875 -68.625 1.052298e-04
 ## 2 -18.875 -68.375 1.009409e-04
 ## 3 -18.875 -68.125 7.404519e-05
 ## 4 -18.875 -67.875 6.044744e-05
 ## 5 -18.875 -67.625 8.102543e-05
 ## 6 -18.875 -67.375 9.289138e-05
-</code></pre>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># When we derive EKE, grid cells over land produce NaNs, so we must replace them with NAs</span>
-data.eke<span class="o">$</span>eke<span class="p">[</span><span class="kp">which</span><span class="p">(</span><span class="kp">is.nan</span><span class="p">(</span>data.eke<span class="o">$</span>eke<span class="p">))]</span> <span class="o">&lt;-</span> <span class="kc">NA</span></code></pre></div>
-<h2 id="define-our-map-extents">Define our map extents</h2>
-
+</code></pre><div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># When we derive EKE, grid cells over land produce NaNs, so we must replace them with NAs</span>
+<span class="n">data.eke</span><span class="o">$</span><span class="n">eke</span><span class="nf">[which</span><span class="p">(</span><span class="nf">is.nan</span><span class="p">(</span><span class="n">data.eke</span><span class="o">$</span><span class="n">eke</span><span class="p">)</span><span class="p">)</span><span class="n">]</span> <span class="o">&lt;-</span> <span class="kc">NA</span>
+</code></pre></div><h2 id="define-our-map-extents">Define our map extents</h2>
 <p>The EKE data spans from -18.875 E to 43.875 E and -38.88 N to -68.62 N.
-Those are the extents needed for the full study, but it&rsquo;s too much for the plot, so we must subset it.</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r">latmin <span class="o">&lt;-</span> <span class="m">-55</span>
-latmax <span class="o">&lt;-</span> <span class="m">-43</span>
-lonmin <span class="o">&lt;-</span> <span class="m">20</span>
-lonmax <span class="o">&lt;-</span> <span class="m">43</span>
-map.extents <span class="o">&lt;-</span> extent<span class="p">(</span>lonmin<span class="p">,</span> lonmax<span class="p">,</span> latmin<span class="p">,</span> latmax<span class="p">)</span>
-data.eke.sub <span class="o">&lt;-</span> <span class="kp">subset</span><span class="p">(</span>data.eke<span class="p">,</span>
-                       data.eke<span class="o">$</span>lat <span class="o">&gt;=</span> latmin <span class="o">&amp;</span>
-                           data.eke<span class="o">$</span>lat <span class="o">&lt;=</span> latmax <span class="o">&amp;</span>
-                           data.eke<span class="o">$</span>lon <span class="o">&gt;=</span> lonmin <span class="o">&amp;</span>
-                           data.eke<span class="o">$</span>lon <span class="o">&lt;=</span> lonmax<span class="p">)</span></code></pre></div>
-<h2 id="shape-files">Shape Files</h2>
-
-<p>The plot area includes the Prince Edward Islands. Instead of leaving blank, blocky spaces, let&rsquo;s use some shape files to make it look neater. These shape files come from <a href="http://www.naturalearthdata.com">http://www.naturalearthdata.com</a>. They are from the &lsquo;fine scale (1:10), Admin 0 -Countries&rsquo; set available for free from <a href="http://www.naturalearthdata.com/downloads/10m-cultural-vectors/">here</a>.</p>
+Those are the extents needed for the full study, but it's too much for the plot, so we must subset it.</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">latmin</span> <span class="o">&lt;-</span> <span class="m">-55</span>
+<span class="n">latmax</span> <span class="o">&lt;-</span> <span class="m">-43</span>
+<span class="n">lonmin</span> <span class="o">&lt;-</span> <span class="m">20</span>
+<span class="n">lonmax</span> <span class="o">&lt;-</span> <span class="m">43</span>
+<span class="n">map.extents</span> <span class="o">&lt;-</span> <span class="nf">extent</span><span class="p">(</span><span class="n">lonmin</span><span class="p">,</span> <span class="n">lonmax</span><span class="p">,</span> <span class="n">latmin</span><span class="p">,</span> <span class="n">latmax</span><span class="p">)</span>
+<span class="n">data.eke.sub</span> <span class="o">&lt;-</span> <span class="nf">subset</span><span class="p">(</span><span class="n">data.eke</span><span class="p">,</span>
+                       <span class="n">data.eke</span><span class="o">$</span><span class="n">lat</span> <span class="o">&gt;=</span> <span class="n">latmin</span> <span class="o">&amp;</span>
+                           <span class="n">data.eke</span><span class="o">$</span><span class="n">lat</span> <span class="o">&lt;=</span> <span class="n">latmax</span> <span class="o">&amp;</span>
+                           <span class="n">data.eke</span><span class="o">$</span><span class="n">lon</span> <span class="o">&gt;=</span> <span class="n">lonmin</span> <span class="o">&amp;</span>
+                           <span class="n">data.eke</span><span class="o">$</span><span class="n">lon</span> <span class="o">&lt;=</span> <span class="n">lonmax</span><span class="p">)</span>
+</code></pre></div><h2 id="shape-files">Shape Files</h2>
+<p>The plot area includes the Prince Edward Islands. Instead of leaving blank, blocky spaces, let's use some shape files to make it look neater. These shape files come from <a href="http://www.naturalearthdata.com">http://www.naturalearthdata.com</a>. They are from the &lsquo;fine scale (1:10), Admin 0 -Countries&rsquo; set available for free from <a href="http://www.naturalearthdata.com/downloads/10m-cultural-vectors/">here</a>.</p>
 <div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># read in the shape file</span>
-countries <span class="o">&lt;-</span> readOGR<span class="p">(</span><span class="s">&#34;shapes&#34;</span><span class="p">,</span> layer<span class="o">=</span><span class="s">&#34;ne_10m_admin_0_countries&#34;</span><span class="p">)</span>
+<span class="n">countries</span> <span class="o">&lt;-</span> <span class="nf">readOGR</span><span class="p">(</span><span class="s">&#34;</span><span class="s">shapes&#34;</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="s">&#34;</span><span class="s">ne_10m_admin_0_countries&#34;</span><span class="p">)</span>
 <span class="c1"># Add an id column to the data slot of countries, based on rownames</span>
-countries<span class="o">@</span>data<span class="o">$</span>id <span class="o">&lt;-</span> <span class="kp">rownames</span><span class="p">(</span>countries<span class="o">@</span>data<span class="p">)</span>
+<span class="n">countries</span><span class="o">@</span><span class="n">data</span><span class="o">$</span><span class="n">id</span> <span class="o">&lt;-</span> <span class="nf">rownames</span><span class="p">(</span><span class="n">countries</span><span class="o">@</span><span class="n">data</span><span class="p">)</span>
 <span class="c1"># Fortify the spatial polygons for ggplot2 - likes long format data</span>
 <span class="c1"># The resulting data frame contains all the spatial data and the id but no information labels.</span>
-countries.df <span class="o">&lt;-</span> fortify<span class="p">(</span>countries<span class="p">)</span>
+<span class="n">countries.df</span> <span class="o">&lt;-</span> <span class="nf">fortify</span><span class="p">(</span><span class="n">countries</span><span class="p">)</span>
 <span class="c1"># Use the id column to join all the label data in countries@data to the new dataframe.</span>
-countries.df <span class="o">&lt;-</span> join<span class="p">(</span>countries.df<span class="p">,</span> countries<span class="o">@</span>data<span class="p">,</span> by<span class="o">=</span><span class="s">&#34;id&#34;</span><span class="p">)</span>
+<span class="n">countries.df</span> <span class="o">&lt;-</span> <span class="nf">join</span><span class="p">(</span><span class="n">countries.df</span><span class="p">,</span> <span class="n">countries</span><span class="o">@</span><span class="n">data</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s">&#34;</span><span class="s">id&#34;</span><span class="p">)</span>
 <span class="c1"># Now we can subset the new dataframe to include only South Africa and her Islands and tidy up a bit</span>
-za <span class="o">&lt;-</span> <span class="kp">subset</span><span class="p">(</span>countries.df<span class="p">,</span> countries.df<span class="o">$</span>ISO_A2<span class="o">==</span><span class="s">&#34;ZA&#34;</span><span class="p">)</span>
-<span class="kp">rm</span><span class="p">(</span>countries<span class="p">,</span> countries.df<span class="p">)</span></code></pre></div>
-<h2 id="geotiff">GeoTIFF</h2>
-
+<span class="n">za</span> <span class="o">&lt;-</span> <span class="nf">subset</span><span class="p">(</span><span class="n">countries.df</span><span class="p">,</span> <span class="n">countries.df</span><span class="o">$</span><span class="n">ISO_A2</span><span class="o">==</span><span class="s">&#34;</span><span class="s">ZA&#34;</span><span class="p">)</span>
+<span class="nf">rm</span><span class="p">(</span><span class="n">countries</span><span class="p">,</span> <span class="n">countries.df</span><span class="p">)</span>
+</code></pre></div><h2 id="geotiff">GeoTIFF</h2>
 <p>The plot needs some bathymetric contour lines. We will use the ETOPO1 data for this via a GeoTIFF. There are higher resolution data sets around (e.g. ETOTPO2 and GEBCO) but ETOPO1 will suffice for this application. The ETOPO1 data is (freely?) available from <a href="http://www.ngdc.noaa.gov/mgg/global/global.html">here</a>.</p>
 <div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># Load up the geotiff</span>
-etopo1.full <span class="o">&lt;-</span> raster<span class="p">(</span><span class="s">&#34;etopo/ETOPO1_Ice_c_geotiff.tif&#34;</span><span class="p">)</span>
+<span class="n">etopo1.full</span> <span class="o">&lt;-</span> <span class="nf">raster</span><span class="p">(</span><span class="s">&#34;</span><span class="s">etopo/ETOPO1_Ice_c_geotiff.tif&#34;</span><span class="p">)</span>
 <span class="c1"># Crop out our ROI</span>
-etopo.crop <span class="o">&lt;-</span> crop<span class="p">(</span>etopo1.full<span class="p">,</span> map.extents<span class="p">)</span>
+<span class="n">etopo.crop</span> <span class="o">&lt;-</span> <span class="nf">crop</span><span class="p">(</span><span class="n">etopo1.full</span><span class="p">,</span> <span class="n">map.extents</span><span class="p">)</span>
 <span class="c1"># Prepare for ggplot2 (long format) and tidy up a bit</span>
-etopo.crop.df <span class="o">&lt;-</span> <span class="kp">as.data.frame</span><span class="p">(</span>etopo.crop<span class="p">,</span> xy<span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
-<span class="kp">names</span><span class="p">(</span>etopo.crop.df<span class="p">)</span> <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#34;long&#34;</span><span class="p">,</span> <span class="s">&#34;lat&#34;</span><span class="p">,</span> <span class="s">&#34;z&#34;</span><span class="p">)</span>
-<span class="kp">rm</span><span class="p">(</span>etopo1.full<span class="p">)</span></code></pre></div>
-<h2 id="polygon">Polygon</h2>
-
-<p>Lastly we&rsquo;ll build a simple polygon to demarcate an area we consider within the region of elevated EKE (eddy field).</p>
+<span class="n">etopo.crop.df</span> <span class="o">&lt;-</span> <span class="nf">as.data.frame</span><span class="p">(</span><span class="n">etopo.crop</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="nf">names</span><span class="p">(</span><span class="n">etopo.crop.df</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;</span><span class="s">long&#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">lat&#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">z&#34;</span><span class="p">)</span>
+<span class="nf">rm</span><span class="p">(</span><span class="n">etopo1.full</span><span class="p">)</span>
+</code></pre></div><h2 id="polygon">Polygon</h2>
+<p>Lastly we'll build a simple polygon to demarcate an area we consider within the region of elevated EKE (eddy field).</p>
 <div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># Define extents</span>
-eflatmin <span class="o">&lt;-</span> <span class="m">-53</span>
-eflatmax <span class="o">&lt;-</span> <span class="m">-47.33</span>
-eflonmin <span class="o">&lt;-</span> <span class="m">27.33</span>
-eflonmax <span class="o">&lt;-</span> <span class="m">37.66</span>
+<span class="n">eflatmin</span> <span class="o">&lt;-</span> <span class="m">-53</span>
+<span class="n">eflatmax</span> <span class="o">&lt;-</span> <span class="m">-47.33</span>
+<span class="n">eflonmin</span> <span class="o">&lt;-</span> <span class="m">27.33</span>
+<span class="n">eflonmax</span> <span class="o">&lt;-</span> <span class="m">37.66</span>
 <span class="c1"># bind the data into sequential coordinates, outlining the new polygon and generate a polygon.</span>
-ef.coords <span class="o">&lt;-</span> <span class="kp">cbind</span><span class="p">(</span><span class="kt">c</span><span class="p">(</span>eflonmin<span class="p">,</span> eflonmax<span class="p">,</span> eflonmax<span class="p">,</span> eflonmin<span class="p">,</span> eflonmin<span class="p">),</span>
-                   <span class="kt">c</span><span class="p">(</span>eflatmax<span class="p">,</span> eflatmax<span class="p">,</span> eflatmin<span class="p">,</span> eflatmin<span class="p">,</span> eflatmax<span class="p">))</span>
-ef.poly <span class="o">&lt;-</span> Polygon<span class="p">(</span>ef.coords<span class="p">)</span>
+<span class="n">ef.coords</span> <span class="o">&lt;-</span> <span class="nf">cbind</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">eflonmin</span><span class="p">,</span> <span class="n">eflonmax</span><span class="p">,</span> <span class="n">eflonmax</span><span class="p">,</span> <span class="n">eflonmin</span><span class="p">,</span> <span class="n">eflonmin</span><span class="p">)</span><span class="p">,</span>
+                   <span class="nf">c</span><span class="p">(</span><span class="n">eflatmax</span><span class="p">,</span> <span class="n">eflatmax</span><span class="p">,</span> <span class="n">eflatmin</span><span class="p">,</span> <span class="n">eflatmin</span><span class="p">,</span> <span class="n">eflatmax</span><span class="p">)</span><span class="p">)</span>
+<span class="n">ef.poly</span> <span class="o">&lt;-</span> <span class="nf">Polygon</span><span class="p">(</span><span class="n">ef.coords</span><span class="p">)</span>
 <span class="c1"># Prepare for ggplot2 and tidy up</span>
-ef.df <span class="o">&lt;-</span> fortify<span class="p">(</span>ef.poly<span class="p">)</span>
+<span class="n">ef.df</span> <span class="o">&lt;-</span> <span class="nf">fortify</span><span class="p">(</span><span class="n">ef.poly</span><span class="p">)</span>
 <span class="c1"># set an individual group for plotting</span>
-ef.df<span class="o">$</span>group <span class="o">&lt;-</span><span class="m">1</span>
-<span class="kp">rm</span><span class="p">(</span>ef.coords<span class="p">,</span> ef.poly<span class="p">)</span></code></pre></div>
-<h1 id="plot-time">Plot time</h1>
-
-<p>Finally we have all the bits in place so we can build a plot. We&rsquo;ll start with the colourful version, and then see how to refine it to a grey scale contoured version.</p>
-
+<span class="n">ef.df</span><span class="o">$</span><span class="n">group</span> <span class="o">&lt;-</span><span class="m">1</span>
+<span class="nf">rm</span><span class="p">(</span><span class="n">ef.coords</span><span class="p">,</span> <span class="n">ef.poly</span><span class="p">)</span>
+</code></pre></div><h1 id="plot-time">Plot time</h1>
+<p>Finally we have all the bits in place so we can build a plot. We'll start with the colourful version, and then see how to refine it to a grey scale contoured version.</p>
 <h2 id="preliminaries">Preliminaries</h2>
-
 <p>We start by defining the plot label positions and text and then set some custom theme stuff. See <a href="http://docs.ggplot2.org/current/theme.html">here</a> for more on theming.</p>
 <div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># define some lables and their coordinates</span>
-lbl <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>x <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">40</span><span class="p">,</span> <span class="m">36</span><span class="p">,</span> <span class="m">30</span><span class="p">,</span> <span class="m">37.1</span><span class="p">,</span> <span class="m">22.5</span><span class="p">),</span>
-                  y <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">-46.5</span><span class="p">,</span> <span class="m">-53.4</span><span class="p">,</span> <span class="m">-50</span><span class="p">,</span> <span class="m">-45</span><span class="p">,</span> <span class="m">-51.5</span><span class="p">),</span>
-                  txt <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#34;Marion Island&#34;</span><span class="p">,</span> <span class="s">&#34;Eddy Field&#34;</span><span class="p">,</span> <span class="s">&#34; &#34;</span><span class="p">,</span> <span class="s">&#34;SWIR&#34;</span><span class="p">,</span> <span class="s">&#34;SWIR&#34;</span><span class="p">))</span>
+<span class="n">lbl</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">40</span><span class="p">,</span> <span class="m">36</span><span class="p">,</span> <span class="m">30</span><span class="p">,</span> <span class="m">37.1</span><span class="p">,</span> <span class="m">22.5</span><span class="p">)</span><span class="p">,</span>
+                  <span class="n">y</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">-46.5</span><span class="p">,</span> <span class="m">-53.4</span><span class="p">,</span> <span class="m">-50</span><span class="p">,</span> <span class="m">-45</span><span class="p">,</span> <span class="m">-51.5</span><span class="p">)</span><span class="p">,</span>
+                  <span class="n">txt</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;</span><span class="s">Marion Island&#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">Eddy Field&#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s"> &#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">SWIR&#34;</span><span class="p">,</span> <span class="s">&#34;</span><span class="s">SWIR&#34;</span><span class="p">)</span><span class="p">)</span>
 <span class="c1"># Define the theme data as I like it for these plots...</span>
-thm <span class="o">&lt;-</span> theme_bw<span class="p">()</span> <span class="o">+</span> 
-    theme<span class="p">(</span>axis.text.x <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
-          axis.text.y <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
-          axis.title.x <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
-          axis.title.y <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
-          axis.ticks.x <span class="o">=</span> element_line<span class="p">(</span>size<span class="o">=</span><span class="m">0.3</span><span class="p">),</span>
-          axis.ticks.y <span class="o">=</span> element_line<span class="p">(</span>size<span class="o">=</span><span class="m">0.3</span><span class="p">),</span>          
-          legend.key.height <span class="o">=</span> unit<span class="p">(</span><span class="m">13</span><span class="p">,</span> units<span class="o">=</span><span class="s">&#34;mm&#34;</span><span class="p">),</span>
-          legend.text <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
-          legend.title <span class="o">=</span> element_text<span class="p">(</span>size<span class="o">=</span><span class="m">8</span><span class="p">,</span> angle <span class="o">=</span> <span class="m">90</span><span class="p">,</span> vjust <span class="o">=</span> <span class="m">1</span><span class="p">,</span> face <span class="o">=</span> <span class="s">&#34;plain&#34;</span><span class="p">),</span>
-          legend.title.align <span class="o">=</span> <span class="m">0.5</span><span class="p">,</span>
-          panel.border <span class="o">=</span> element_rect<span class="p">(</span>colour <span class="o">=</span> <span class="s">&#34;black&#34;</span><span class="p">,</span> fill<span class="o">=</span><span class="kc">NA</span><span class="p">,</span> size<span class="o">=</span><span class="m">.3</span><span class="p">))</span></code></pre></div>
-<h2 id="coloured-tiles-plot">Coloured tiles plot</h2>
-
-<p>Ggplot2 is even more awesome than anything you might have read, but it can be intimidating (I find). The best I can suggest is to keep playing and you&rsquo;ll start to get a handle on. One of the biggest difficulties for me was figuring out what order the layers should be in. This is where I ended up. I&rsquo;d like to tell you that I had figured out an overriding set of rules, but there was some trial and error involved.</p>
-
+<span class="n">thm</span> <span class="o">&lt;-</span> <span class="nf">theme_bw</span><span class="p">(</span><span class="p">)</span> <span class="o">+</span> 
+    <span class="nf">theme</span><span class="p">(</span><span class="n">axis.text.x</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">face</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">plain&#34;</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">axis.text.y</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">face</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">plain&#34;</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">axis.title.x</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">face</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">plain&#34;</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">axis.title.y</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">face</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">plain&#34;</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">axis.ticks.x</span> <span class="o">=</span> <span class="nf">element_line</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">0.3</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">axis.ticks.y</span> <span class="o">=</span> <span class="nf">element_line</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">0.3</span><span class="p">)</span><span class="p">,</span>          
+          <span class="n">legend.key.height</span> <span class="o">=</span> <span class="nf">unit</span><span class="p">(</span><span class="m">13</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s">&#34;</span><span class="s">mm&#34;</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">legend.text</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">face</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">plain&#34;</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">legend.title</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">angle</span> <span class="o">=</span> <span class="m">90</span><span class="p">,</span> <span class="n">vjust</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="n">face</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">plain&#34;</span><span class="p">)</span><span class="p">,</span>
+          <span class="n">legend.title.align</span> <span class="o">=</span> <span class="m">0.5</span><span class="p">,</span>
+          <span class="n">panel.border</span> <span class="o">=</span> <span class="nf">element_rect</span><span class="p">(</span><span class="n">colour</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">NA</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="m">.3</span><span class="p">)</span><span class="p">)</span>
+</code></pre></div><h2 id="coloured-tiles-plot">Coloured tiles plot</h2>
+<p>Ggplot2 is even more awesome than anything you might have read, but it can be intimidating (I find). The best I can suggest is to keep playing and you'll start to get a handle on. One of the biggest difficulties for me was figuring out what order the layers should be in. This is where I ended up. I'd like to tell you that I had figured out an overriding set of rules, but there was some trial and error involved.</p>
 <p>I have tried to comment the coloured plot extensively.</p>
 <div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="c1"># initiate the plot</span>
-plot.eke.colour <span class="o">&lt;-</span> ggplot<span class="p">()</span> <span class="o">+</span>
+<span class="n">plot.eke.colour</span> <span class="o">&lt;-</span> <span class="nf">ggplot</span><span class="p">(</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># include a layer with the eke data as coloured tile data</span>
-    geom_tile<span class="p">(</span>data<span class="o">=</span>data.eke.sub<span class="p">,</span> aes<span class="p">(</span>x<span class="o">=</span>lon<span class="p">,</span>y<span class="o">=</span>lat<span class="p">,</span>fill<span class="o">=</span>eke<span class="p">))</span> <span class="o">+</span>
+    <span class="nf">geom_tile</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data.eke.sub</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">lon</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">lat</span><span class="p">,</span><span class="n">fill</span><span class="o">=</span><span class="n">eke</span><span class="p">)</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># include the shape file data</span>
-    geom_polygon<span class="p">(</span>data <span class="o">=</span> za<span class="p">,</span> aes<span class="p">(</span>x <span class="o">=</span> long<span class="p">,</span> y <span class="o">=</span> lat<span class="p">,</span> group <span class="o">=</span> group<span class="p">),</span> 
-                 colour<span class="o">=</span><span class="s">&#34;black&#34;</span><span class="p">,</span> fill<span class="o">=</span><span class="s">&#34;white&#34;</span><span class="p">,</span> alpha<span class="o">=</span><span class="m">1</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span> 
+    <span class="nf">geom_polygon</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">za</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">long</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">lat</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="p">)</span><span class="p">,</span> 
+                 <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s">&#34;</span><span class="s">white&#34;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="m">1</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span> 
     <span class="c1"># include the home made polygon data</span>
-    geom_polygon<span class="p">(</span>data<span class="o">=</span>ef.df<span class="p">,</span> aes<span class="p">(</span>x<span class="o">=</span>long<span class="p">,</span> y<span class="o">=</span>lat<span class="p">,</span> group<span class="o">=</span>group<span class="p">),</span> 
-                 colour<span class="o">=</span><span class="s">&#34;black&#34;</span><span class="p">,</span> fill<span class="o">=</span><span class="s">&#34;white&#34;</span><span class="p">,</span> alpha<span class="o">=</span><span class="m">0</span><span class="p">,</span> linetype<span class="o">=</span><span class="s">&#34;dashed&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_polygon</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">ef.df</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">long</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">lat</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">)</span><span class="p">,</span> 
+                 <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s">&#34;</span><span class="s">white&#34;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="m">0</span><span class="p">,</span> <span class="n">linetype</span><span class="o">=</span><span class="s">&#34;</span><span class="s">dashed&#34;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># include the bathymetry data with geom_contour. Define a single custom break</span>
-    geom_contour<span class="p">(</span>data<span class="o">=</span>etopo.crop.df<span class="p">,</span> aes<span class="p">(</span>x<span class="o">=</span>long<span class="p">,</span>y<span class="o">=</span>lat<span class="p">,</span>z<span class="o">=</span>z<span class="p">),</span> 
-                 breaks<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="m">-3000</span><span class="p">),</span> colour<span class="o">=</span><span class="s">&#34;black&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_contour</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">etopo.crop.df</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">long</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">lat</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">)</span><span class="p">,</span> 
+                 <span class="n">breaks</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">-3000</span><span class="p">)</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># axis lables</span>
-    labs<span class="p">(</span>x <span class="o">=</span> <span class="s">&#39;Longitude (ºE)&#39;</span><span class="p">,</span> y <span class="o">=</span> <span class="s">&#39;Latitude (ºN)&#39;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s">&#39;</span><span class="s">Longitude (ºE)&#39;</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="s">&#39;</span><span class="s">Latitude (ºN)&#39;</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># map projection - boring choice but suits the task at hand</span>
-    coord_map<span class="p">(</span><span class="s">&#34;mercator&#34;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">coord_map</span><span class="p">(</span><span class="s">&#34;</span><span class="s">mercator&#34;</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># this trims unwanted whitespace around the plot</span>
-    coord_fixed<span class="p">(</span>xlim <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>lonmin<span class="p">,</span> lonmax<span class="p">),</span> ylim <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>latmin<span class="p">,</span> latmax<span class="p">),</span> expand <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">coord_fixed</span><span class="p">(</span><span class="n">xlim</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="n">lonmin</span><span class="p">,</span> <span class="n">lonmax</span><span class="p">)</span><span class="p">,</span> <span class="n">ylim</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="n">latmin</span><span class="p">,</span> <span class="n">latmax</span><span class="p">)</span><span class="p">,</span> <span class="n">expand</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># change the default EKE colour to more traditional rainbow colours (oceanography etc)</span>
-    scale_fill_gradientn<span class="p">(</span>colours <span class="o">=</span> <span class="kp">rev</span><span class="p">(</span>rainbow<span class="p">(</span><span class="m">7</span><span class="p">,</span> end<span class="o">=</span><span class="m">4</span><span class="o">/</span><span class="m">6</span><span class="p">)),</span> 
-                         space <span class="o">=</span> <span class="s">&#34;Lab&#34;</span><span class="p">,</span> 
-                         guide <span class="o">=</span> guide_colorbar<span class="p">(</span>title<span class="o">=</span><span class="s">&#34;Eddy kinetic energy (cm²/s²)&#34;</span><span class="p">,</span> 
-                                                title.position<span class="o">=</span><span class="s">&#34;right&#34;</span><span class="p">))</span> <span class="o">+</span>
+    <span class="nf">scale_fill_gradientn</span><span class="p">(</span><span class="n">colours</span> <span class="o">=</span> <span class="nf">rev</span><span class="p">(</span><span class="nf">rainbow</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="m">4</span><span class="o">/</span><span class="m">6</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> 
+                         <span class="n">space</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">Lab&#34;</span><span class="p">,</span> 
+                         <span class="n">guide</span> <span class="o">=</span> <span class="nf">guide_colorbar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#34;</span><span class="s">Eddy kinetic energy (cm²/s²)&#34;</span><span class="p">,</span> 
+                                                <span class="n">title.position</span><span class="o">=</span><span class="s">&#34;</span><span class="s">right&#34;</span><span class="p">)</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># include the lables defined earlier</span>
-    geom_text<span class="p">(</span>data<span class="o">=</span>lbl<span class="p">,</span> aes<span class="p">(</span>x<span class="o">=</span>x<span class="p">,</span> y<span class="o">=</span>y<span class="p">,</span> label<span class="o">=</span>txt<span class="p">),</span> size<span class="o">=</span>rel<span class="p">(</span><span class="m">3</span><span class="p">),</span> colour<span class="o">=</span><span class="s">&#34;white&#34;</span><span class="p">,</span> fontface<span class="o">=</span><span class="s">&#34;bold&#34;</span><span class="p">,</span> alpha <span class="o">=</span> <span class="m">1</span><span class="p">)</span> <span class="o">+</span>
-    geom_text<span class="p">(</span>data<span class="o">=</span>lbl<span class="p">,</span> aes<span class="p">(</span>x<span class="o">=</span>x<span class="m">+0.01</span><span class="p">,</span> y<span class="o">=</span>y<span class="m">+0.01</span><span class="p">,</span> label<span class="o">=</span>txt<span class="p">),</span> size<span class="o">=</span>rel<span class="p">(</span><span class="m">3</span><span class="p">),</span> colour<span class="o">=</span><span class="s">&#34;black&#34;</span><span class="p">,</span> fontface<span class="o">=</span><span class="s">&#34;bold&#34;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_text</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">lbl</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">txt</span><span class="p">)</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nf">rel</span><span class="p">(</span><span class="m">3</span><span class="p">)</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">white&#34;</span><span class="p">,</span> <span class="n">fontface</span><span class="o">=</span><span class="s">&#34;</span><span class="s">bold&#34;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="m">1</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_text</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">lbl</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="m">+0.01</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="m">+0.01</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">txt</span><span class="p">)</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nf">rel</span><span class="p">(</span><span class="m">3</span><span class="p">)</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">fontface</span><span class="o">=</span><span class="s">&#34;</span><span class="s">bold&#34;</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># include the theme settings</span>
-    thm
-plot.eke.colour</code></pre></div>
-<p><img src="coloured_plot-1.png" alt="" /><!-- --></p>
-
-<p>That looks pretty good. Unfortunately when we save the file, things don&rsquo;t always look the same as they do on the screen so there is generally some fine tuning involved. This version, as it stands, makes rather a good print. The colour palette is familiar to all my MATLAB/Python oceanographic colleagues too.</p>
-
-<p><strong><em>Saving the plot according to the publishers requirements</em></strong></p>
-
+    <span class="n">thm</span>
+<span class="n">plot.eke.colour</span>
+</code></pre></div><p><img src="coloured_plot-1.png" alt=""><!-- raw HTML omitted --></p>
+<p>That looks pretty good. Unfortunately when we save the file, things don't always look the same as they do on the screen so there is generally some fine tuning involved. This version, as it stands, makes rather a good print. The colour palette is familiar to all my MATLAB/Python oceanographic colleagues too.</p>
+<p><em><strong>Saving the plot according to the publishers requirements</strong></em></p>
 <p>For completeness, this is one approach to saving your plots</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r">ggsave<span class="p">(</span>filename <span class="o">=</span> <span class="s">&#39;plot.eke.colour.png&#39;</span><span class="p">,</span> plot <span class="o">=</span> plot.eke.colour<span class="p">,</span> width <span class="o">=</span> <span class="m">174</span><span class="p">,</span> height <span class="o">=</span> <span class="m">105</span><span class="p">,</span> units<span class="o">=</span><span class="s">&#34;mm&#34;</span><span class="p">,</span> dpi <span class="o">=</span> <span class="m">300</span><span class="p">,</span> type<span class="o">=</span><span class="s">&#34;cairo-png&#34;</span><span class="p">)</span></code></pre></div>
-<h2 id="greyscale-contoured-plot">Greyscale contoured plot</h2>
-
-<p>If we just jump in and plot the existing data using the stat_contour() approach we immediately hit a problem. It&rsquo;s a little difficult to explain, but easy enough to understand if you play around a bit. I&rsquo;ll try my best.</p>
-
-<p>Some of the contoured values exist as closed polygons within the plot frame. These plot as we would expect. Unfortunately, other contoured values are (now) polylines. These lines would have closed somewhere outside of the plot extents, but were cropped, resulting in open polygons/polylines. As a result, ggplot2 can&rsquo;t fill them with shading as required. Ggplot2 closes them automatically by joining their ends. This is pretty catastrophic. You can see what happens for yourself by exchanging <code>data.eke.sub.contour</code> for <code>data.eke.sub</code> in the plot code below.</p>
-
-<p><strong><em>Calculate a low arbitrary value</em></strong></p>
-
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="nf">ggsave</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;</span><span class="s">plot.eke.colour.png&#39;</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="n">plot.eke.colour</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="m">174</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="m">105</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s">&#34;</span><span class="s">mm&#34;</span><span class="p">,</span> <span class="n">dpi</span> <span class="o">=</span> <span class="m">300</span><span class="p">,</span> <span class="n">type</span><span class="o">=</span><span class="s">&#34;</span><span class="s">cairo-png&#34;</span><span class="p">)</span>
+</code></pre></div><h2 id="greyscale-contoured-plot">Greyscale contoured plot</h2>
+<p>If we just jump in and plot the existing data using the stat_contour() approach we immediately hit a problem. It's a little difficult to explain, but easy enough to understand if you play around a bit. I'll try my best.</p>
+<p>Some of the contoured values exist as closed polygons within the plot frame. These plot as we would expect. Unfortunately, other contoured values are (now) polylines. These lines would have closed somewhere outside of the plot extents, but were cropped, resulting in open polygons/polylines. As a result, ggplot2 can't fill them with shading as required. Ggplot2 closes them automatically by joining their ends. This is pretty catastrophic. You can see what happens for yourself by exchanging <code>data.eke.sub.contour</code> for <code>data.eke.sub</code> in the plot code below.</p>
+<p><em><strong>Calculate a low arbitrary value</strong></em></p>
 <p>To avoid this we need to add extra, make-believe EKE data just outside the plotting frame. We set this to a low, arbitrary value which allows ggplot2 to close off the contour polygons which we are interested in. What the arbitrary value is, is not <em>that</em> important, as long as it is lower than everything else. I found this approach on <a href="http://stackoverflow.com/questions/28469829/how-to-fill-in-the-contour-fully-using-stat-contour">stackoverflow here</a>. It looks at the data spread, divides it into n bins and sets an arbitrary value according to the lowest value minus the bin width * 1.5.</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r">bins <span class="o">&lt;-</span> <span class="m">50</span>
-bin.width <span class="o">&lt;-</span> <span class="kp">diff</span><span class="p">(</span><span class="kp">range</span><span class="p">(</span>na.omit<span class="p">(</span>data.eke.sub<span class="o">$</span>eke<span class="p">)))</span> <span class="o">/</span> bins
-arbitary.value <span class="o">&lt;-</span> <span class="kp">min</span><span class="p">(</span>na.omit<span class="p">(</span>data.eke.sub<span class="o">$</span>eke<span class="p">))</span> <span class="o">-</span> bin.width <span class="o">*</span> <span class="m">1.5</span>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">bins</span> <span class="o">&lt;-</span> <span class="m">50</span>
+<span class="n">bin.width</span> <span class="o">&lt;-</span> <span class="nf">diff</span><span class="p">(</span><span class="nf">range</span><span class="p">(</span><span class="nf">na.omit</span><span class="p">(</span><span class="n">data.eke.sub</span><span class="o">$</span><span class="n">eke</span><span class="p">)</span><span class="p">)</span><span class="p">)</span> <span class="o">/</span> <span class="n">bins</span>
+<span class="n">arbitary.value</span> <span class="o">&lt;-</span> <span class="nf">min</span><span class="p">(</span><span class="nf">na.omit</span><span class="p">(</span><span class="n">data.eke.sub</span><span class="o">$</span><span class="n">eke</span><span class="p">)</span><span class="p">)</span> <span class="o">-</span> <span class="n">bin.width</span> <span class="o">*</span> <span class="m">1.5</span>
 
 <span class="c1"># Build some data frames representing 1 degree of extra EKE data in each direction, with the arbitrary value as EKE</span>
-min <span class="o">&lt;-</span> <span class="kp">sapply</span><span class="p">(</span>data.eke.sub<span class="p">,</span> <span class="kp">min</span><span class="p">,</span> na.rm <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
-max <span class="o">&lt;-</span> <span class="kp">sapply</span><span class="p">(</span>data.eke.sub<span class="p">,</span> <span class="kp">max</span><span class="p">,</span> na.rm <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+<span class="n">min</span> <span class="o">&lt;-</span> <span class="nf">sapply</span><span class="p">(</span><span class="n">data.eke.sub</span><span class="p">,</span> <span class="n">min</span><span class="p">,</span> <span class="n">na.rm</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+<span class="n">max</span> <span class="o">&lt;-</span> <span class="nf">sapply</span><span class="p">(</span><span class="n">data.eke.sub</span><span class="p">,</span> <span class="n">max</span><span class="p">,</span> <span class="n">na.rm</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
 
-seq.lat <span class="o">&lt;-</span> <span class="kp">seq</span><span class="p">(</span><span class="kp">min</span><span class="p">[</span><span class="s">&#39;lat&#39;</span><span class="p">],</span> <span class="kp">max</span><span class="p">[</span><span class="s">&#39;lat&#39;</span><span class="p">],</span> <span class="m">0.25</span><span class="p">)</span>
-seq.lon <span class="o">&lt;-</span> <span class="kp">seq</span><span class="p">(</span><span class="kp">min</span><span class="p">[</span><span class="s">&#39;lon&#39;</span><span class="p">],</span> <span class="kp">max</span><span class="p">[</span><span class="s">&#39;lon&#39;</span><span class="p">],</span> <span class="m">0.25</span><span class="p">)</span>
+<span class="n">seq.lat</span> <span class="o">&lt;-</span> <span class="nf">seq</span><span class="p">(</span><span class="n">min</span><span class="n">[</span><span class="s">&#39;</span><span class="s">lat&#39;</span><span class="n">]</span><span class="p">,</span> <span class="n">max</span><span class="n">[</span><span class="s">&#39;</span><span class="s">lat&#39;</span><span class="n">]</span><span class="p">,</span> <span class="m">0.25</span><span class="p">)</span>
+<span class="n">seq.lon</span> <span class="o">&lt;-</span> <span class="nf">seq</span><span class="p">(</span><span class="n">min</span><span class="n">[</span><span class="s">&#39;</span><span class="s">lon&#39;</span><span class="n">]</span><span class="p">,</span> <span class="n">max</span><span class="n">[</span><span class="s">&#39;</span><span class="s">lon&#39;</span><span class="n">]</span><span class="p">,</span> <span class="m">0.25</span><span class="p">)</span>
 
-west.edge <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>lon <span class="o">=</span> <span class="kp">rep</span><span class="p">(</span><span class="kp">min</span><span class="p">[</span><span class="s">&#39;lon&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="m">1</span><span class="p">,</span> <span class="kp">length</span><span class="p">(</span>seq.lat<span class="p">)),</span> lat <span class="o">=</span> seq.lat<span class="p">,</span> eke <span class="o">=</span> arbitary.value<span class="p">)</span>
-east.edge <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>lon <span class="o">=</span> <span class="kp">rep</span><span class="p">(</span><span class="kp">max</span><span class="p">[</span><span class="s">&#39;lon&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="m">1</span><span class="p">,</span> <span class="kp">length</span><span class="p">(</span>seq.lat<span class="p">)),</span> lat <span class="o">=</span> seq.lat<span class="p">,</span> eke <span class="o">=</span> arbitary.value<span class="p">)</span>
-south.edge <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>lon <span class="o">=</span> seq.lon<span class="p">,</span> lat <span class="o">=</span> <span class="kp">rep</span><span class="p">(</span><span class="kp">min</span><span class="p">[</span><span class="s">&#39;lat&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="m">1</span><span class="p">,</span> <span class="kp">length</span><span class="p">(</span>seq.lon<span class="p">)),</span> eke <span class="o">=</span> arbitary.value<span class="p">)</span>
-north.edge <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>lon <span class="o">=</span> seq.lon<span class="p">,</span> lat <span class="o">=</span> <span class="kp">rep</span><span class="p">(</span><span class="kp">max</span><span class="p">[</span><span class="s">&#39;lat&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="m">1</span><span class="p">,</span> <span class="kp">length</span><span class="p">(</span>seq.lon<span class="p">)),</span> eke <span class="o">=</span> arbitary.value<span class="p">)</span>
+<span class="n">west.edge</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">lon</span> <span class="o">=</span> <span class="nf">rep</span><span class="p">(</span><span class="n">min</span><span class="n">[</span><span class="s">&#39;</span><span class="s">lon&#39;</span><span class="n">]</span> <span class="o">-</span> <span class="m">1</span><span class="p">,</span> <span class="nf">length</span><span class="p">(</span><span class="n">seq.lat</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">seq.lat</span><span class="p">,</span> <span class="n">eke</span> <span class="o">=</span> <span class="n">arbitary.value</span><span class="p">)</span>
+<span class="n">east.edge</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">lon</span> <span class="o">=</span> <span class="nf">rep</span><span class="p">(</span><span class="n">max</span><span class="n">[</span><span class="s">&#39;</span><span class="s">lon&#39;</span><span class="n">]</span> <span class="o">+</span> <span class="m">1</span><span class="p">,</span> <span class="nf">length</span><span class="p">(</span><span class="n">seq.lat</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">seq.lat</span><span class="p">,</span> <span class="n">eke</span> <span class="o">=</span> <span class="n">arbitary.value</span><span class="p">)</span>
+<span class="n">south.edge</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">lon</span> <span class="o">=</span> <span class="n">seq.lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="nf">rep</span><span class="p">(</span><span class="n">min</span><span class="n">[</span><span class="s">&#39;</span><span class="s">lat&#39;</span><span class="n">]</span> <span class="o">-</span> <span class="m">1</span><span class="p">,</span> <span class="nf">length</span><span class="p">(</span><span class="n">seq.lon</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">eke</span> <span class="o">=</span> <span class="n">arbitary.value</span><span class="p">)</span>
+<span class="n">north.edge</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">lon</span> <span class="o">=</span> <span class="n">seq.lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="nf">rep</span><span class="p">(</span><span class="n">max</span><span class="n">[</span><span class="s">&#39;</span><span class="s">lat&#39;</span><span class="n">]</span> <span class="o">+</span> <span class="m">1</span><span class="p">,</span> <span class="nf">length</span><span class="p">(</span><span class="n">seq.lon</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">eke</span> <span class="o">=</span> <span class="n">arbitary.value</span><span class="p">)</span>
 
 <span class="c1"># rbind the new data to the existing data and tidy up</span>
-data.eke.sub.contour <span class="o">&lt;-</span> <span class="kp">rbind</span><span class="p">(</span>data.eke.sub<span class="p">,</span> west.edge<span class="p">,</span> east.edge<span class="p">,</span> north.edge<span class="p">,</span> south.edge<span class="p">)</span>
+<span class="n">data.eke.sub.contour</span> <span class="o">&lt;-</span> <span class="nf">rbind</span><span class="p">(</span><span class="n">data.eke.sub</span><span class="p">,</span> <span class="n">west.edge</span><span class="p">,</span> <span class="n">east.edge</span><span class="p">,</span> <span class="n">north.edge</span><span class="p">,</span> <span class="n">south.edge</span><span class="p">)</span>
 
-<span class="kp">rm</span><span class="p">(</span>bins<span class="p">,</span> bin.width<span class="p">,</span> arbitary.value<span class="p">,</span> <span class="kp">min</span><span class="p">,</span> <span class="kp">max</span><span class="p">,</span> seq.lat<span class="p">,</span> seq.lon<span class="p">,</span> west.edge<span class="p">,</span> east.edge<span class="p">,</span> north.edge<span class="p">,</span> south.edge<span class="p">)</span></code></pre></div>
-<p><strong><em>Now we plot</em></strong></p>
-
-<p>Now, with our newly padded dataset, we can complete the greyscale plot. I&rsquo;ve only commented the changed lines in this plot (vs. the colour plot above).</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r">plot.eke.contour.grey <span class="o">&lt;-</span> ggplot<span class="p">()</span> <span class="o">+</span>
+<span class="nf">rm</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">bin.width</span><span class="p">,</span> <span class="n">arbitary.value</span><span class="p">,</span> <span class="n">min</span><span class="p">,</span> <span class="n">max</span><span class="p">,</span> <span class="n">seq.lat</span><span class="p">,</span> <span class="n">seq.lon</span><span class="p">,</span> <span class="n">west.edge</span><span class="p">,</span> <span class="n">east.edge</span><span class="p">,</span> <span class="n">north.edge</span><span class="p">,</span> <span class="n">south.edge</span><span class="p">)</span>
+</code></pre></div><p><em><strong>Now we plot</strong></em></p>
+<p>Now, with our newly padded dataset, we can complete the greyscale plot. I've only commented the changed lines in this plot (vs. the colour plot above).</p>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">plot.eke.contour.grey</span> <span class="o">&lt;-</span> <span class="nf">ggplot</span><span class="p">(</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># This line denotes the newly padded data, as a contour statistic.</span>
     <span class="c1"># ..level.. indicates that the fill aesthetic is calculated by the contour statistic.</span>
     <span class="c1"># breaks manually define which contours we want to keep.</span>
-    stat_contour<span class="p">(</span>data <span class="o">=</span> data.eke.sub.contour<span class="p">,</span> aes<span class="p">(</span>x <span class="o">=</span> lon<span class="p">,</span> y <span class="o">=</span> lat<span class="p">,</span> z <span class="o">=</span> eke<span class="p">,</span> fill <span class="o">=</span> <span class="m">..</span>level..<span class="p">),</span> 
-                 geom <span class="o">=</span> <span class="s">&#34;polygon&#34;</span><span class="p">,</span> breaks <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0.02</span><span class="p">,</span> <span class="m">0.04</span><span class="p">,</span> <span class="m">0.06</span><span class="p">,</span> <span class="m">0.08</span><span class="p">))</span> <span class="o">+</span>
-    geom_polygon<span class="p">(</span>data <span class="o">=</span> za<span class="p">,</span> aes<span class="p">(</span>x <span class="o">=</span> long<span class="p">,</span> y <span class="o">=</span> lat<span class="p">,</span> group <span class="o">=</span> group<span class="p">),</span> 
-                 colour<span class="o">=</span><span class="s">&#34;black&#34;</span><span class="p">,</span> fill<span class="o">=</span><span class="s">&#34;white&#34;</span><span class="p">,</span> alpha<span class="o">=</span><span class="m">1</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span> 
-    geom_polygon<span class="p">(</span>data<span class="o">=</span>ef.df<span class="p">,</span> aes<span class="p">(</span>x<span class="o">=</span>long<span class="p">,</span> y<span class="o">=</span>lat<span class="p">,</span> group<span class="o">=</span>group<span class="p">),</span> 
-                 colour<span class="o">=</span><span class="s">&#34;black&#34;</span><span class="p">,</span> fill<span class="o">=</span><span class="s">&#34;white&#34;</span><span class="p">,</span> alpha<span class="o">=</span><span class="m">0</span><span class="p">,</span> linetype<span class="o">=</span><span class="s">&#34;dashed&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
-    geom_contour<span class="p">(</span>data<span class="o">=</span>etopo.crop.df<span class="p">,</span> aes<span class="p">(</span>x<span class="o">=</span>long<span class="p">,</span>y<span class="o">=</span>lat<span class="p">,</span>z<span class="o">=</span>z<span class="p">),</span> breaks<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="m">-3000</span><span class="p">),</span> colour<span class="o">=</span><span class="s">&#34;black&#34;</span><span class="p">,</span> size <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
-    coord_map<span class="p">(</span><span class="s">&#34;mercator&#34;</span><span class="p">)</span> <span class="o">+</span>
-    coord_fixed<span class="p">(</span>xlim <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>lonmin<span class="p">,</span> lonmax<span class="p">),</span> ylim <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>latmin<span class="p">,</span> latmax<span class="p">),</span> expand <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span> <span class="o">+</span>
-    labs<span class="p">(</span>x <span class="o">=</span> <span class="s">&#39;Longitude (ºE)&#39;</span><span class="p">,</span> y <span class="o">=</span> <span class="s">&#39;Latitude (ºN)&#39;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">stat_contour</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data.eke.sub.contour</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">lon</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">lat</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">eke</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="n">..level..</span><span class="p">)</span><span class="p">,</span> 
+                 <span class="n">geom</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">polygon&#34;</span><span class="p">,</span> <span class="n">breaks</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0.02</span><span class="p">,</span> <span class="m">0.04</span><span class="p">,</span> <span class="m">0.06</span><span class="p">,</span> <span class="m">0.08</span><span class="p">)</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_polygon</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">za</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">long</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">lat</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="p">)</span><span class="p">,</span> 
+                 <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s">&#34;</span><span class="s">white&#34;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="m">1</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span> 
+    <span class="nf">geom_polygon</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">ef.df</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">long</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">lat</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">)</span><span class="p">,</span> 
+                 <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s">&#34;</span><span class="s">white&#34;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="m">0</span><span class="p">,</span> <span class="n">linetype</span><span class="o">=</span><span class="s">&#34;</span><span class="s">dashed&#34;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_contour</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">etopo.crop.df</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">long</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">lat</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">)</span><span class="p">,</span> <span class="n">breaks</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">-3000</span><span class="p">)</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">black&#34;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">coord_map</span><span class="p">(</span><span class="s">&#34;</span><span class="s">mercator&#34;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">coord_fixed</span><span class="p">(</span><span class="n">xlim</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="n">lonmin</span><span class="p">,</span> <span class="n">lonmax</span><span class="p">)</span><span class="p">,</span> <span class="n">ylim</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="n">latmin</span><span class="p">,</span> <span class="n">latmax</span><span class="p">)</span><span class="p">,</span> <span class="n">expand</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s">&#39;</span><span class="s">Longitude (ºE)&#39;</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="s">&#39;</span><span class="s">Latitude (ºN)&#39;</span><span class="p">)</span> <span class="o">+</span>
     <span class="c1"># Here the grey scale colours are defined for the plot and the legend</span>
-    scale_fill_gradient<span class="p">(</span>low <span class="o">=</span> <span class="s">&#34;gray25&#34;</span><span class="p">,</span> high <span class="o">=</span> <span class="s">&#34;gray95&#34;</span><span class="p">,</span>
-                        space <span class="o">=</span> <span class="s">&#34;Lab&#34;</span><span class="p">,</span> 
-                        guide <span class="o">=</span> guide_colorbar<span class="p">(</span>title<span class="o">=</span><span class="s">&#34;Eddy kinetic energy (cm²/s²)&#34;</span><span class="p">,</span> title.position<span class="o">=</span><span class="s">&#34;right&#34;</span><span class="p">))</span> <span class="o">+</span>
-    geom_text<span class="p">(</span>data<span class="o">=</span>lbl<span class="p">,</span> aes<span class="p">(</span>x<span class="o">=</span>x<span class="p">,</span> y<span class="o">=</span>y<span class="p">,</span> label<span class="o">=</span>txt<span class="p">),</span> size<span class="o">=</span>rel<span class="p">(</span><span class="m">3</span><span class="p">),</span> colour<span class="o">=</span><span class="s">&#34;white&#34;</span><span class="p">)</span> <span class="o">+</span>
-    thm
-plot.eke.contour.grey</code></pre></div>
-<p><img src="greyscale_plot-1.png" alt="" /><!-- --></p>
-
-<p>There we go! The contours look great. There aren&rsquo;t too many of them, they don&rsquo;t have distracting borders, the 3000 m bathymetry contour looks nice and isn&rsquo;t overly distracting.</p>
-
-<p><strong><em>Saving the plot according to the publishers requirements</em></strong></p>
-
+    <span class="nf">scale_fill_gradient</span><span class="p">(</span><span class="n">low</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">gray25&#34;</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">gray95&#34;</span><span class="p">,</span>
+                        <span class="n">space</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">Lab&#34;</span><span class="p">,</span> 
+                        <span class="n">guide</span> <span class="o">=</span> <span class="nf">guide_colorbar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#34;</span><span class="s">Eddy kinetic energy (cm²/s²)&#34;</span><span class="p">,</span> <span class="n">title.position</span><span class="o">=</span><span class="s">&#34;</span><span class="s">right&#34;</span><span class="p">)</span><span class="p">)</span> <span class="o">+</span>
+    <span class="nf">geom_text</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">lbl</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">txt</span><span class="p">)</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nf">rel</span><span class="p">(</span><span class="m">3</span><span class="p">)</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s">&#34;</span><span class="s">white&#34;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="n">thm</span>
+<span class="n">plot.eke.contour.grey</span>
+</code></pre></div><p><img src="greyscale_plot-1.png" alt=""><!-- raw HTML omitted --></p>
+<p>There we go! The contours look great. There aren't too many of them, they don't have distracting borders, the 3000 m bathymetry contour looks nice and isn't overly distracting.</p>
+<p><em><strong>Saving the plot according to the publishers requirements</strong></em></p>
 <p>For completeness, this is one approach to saving your plots</p>
-<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r">ggsave<span class="p">(</span>filename <span class="o">=</span> <span class="s">&#39;plot.eke.contour.grey.png&#39;</span><span class="p">,</span> plot <span class="o">=</span> plot.eke.contour.grey<span class="p">,</span> width <span class="o">=</span> <span class="m">174</span><span class="p">,</span> height <span class="o">=</span> <span class="m">105</span><span class="p">,</span> units<span class="o">=</span><span class="s">&#34;mm&#34;</span><span class="p">,</span> dpi <span class="o">=</span> <span class="m">300</span><span class="p">,</span> type<span class="o">=</span><span class="s">&#34;cairo-png&#34;</span><span class="p">)</span></code></pre></div>
-<p>I hope this helps someone :)
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="nf">ggsave</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;</span><span class="s">plot.eke.contour.grey.png&#39;</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="n">plot.eke.contour.grey</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="m">174</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="m">105</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s">&#34;</span><span class="s">mm&#34;</span><span class="p">,</span> <span class="n">dpi</span> <span class="o">=</span> <span class="m">300</span><span class="p">,</span> <span class="n">type</span><span class="o">=</span><span class="s">&#34;</span><span class="s">cairo-png&#34;</span><span class="p">)</span>
+</code></pre></div><p>I hope this helps someone :)
 <a href="https://github.com/philmassie/20160622_ggplot2_contours">Github repo</a></p>
 
 
@@ -521,19 +484,15 @@ plot.eke.contour.grey</code></pre></div>
                         
                         
                         
-                        <a href="/tags/r" title="R">
-                            R
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/data-science" title="data-science">
+                            data-science
                         </a>
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
                         
                         
                         
@@ -547,6 +506,28 @@ plot.eke.contour.grey</code></pre></div>
                         
                         <a href="/tags/greyscale" title="greyscale">
                             greyscale
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/machine-learning" title="machine-learning">
+                            machine-learning
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/r" title="r">
+                            r
                         </a>
                         
                         
@@ -573,8 +554,6 @@ plot.eke.contour.grey</code></pre></div>
                         
                         <li><a target="_blank" href="https://medium.com/@kirshnee.m">Kirshnee Bhagwandas</a></li>
                         
-                        <li><a target="_blank" href="https://www.lentilcurtain.com/">Glenn Moncrieff</a></li>
-                        
                     </ul>
                 </section>
                 
@@ -591,15 +570,6 @@ plot.eke.contour.grey</code></pre></div>
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <ul class="list-inline text-center">
-                   
-                   <li>
-                       <a href="" rel="alternate" type="application/rss+xml" title="Kabelsalat" >
-                           <span class="fa-stack fa-lg">
-                               <i class="fa fa-circle fa-stack-2x"></i>
-                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
-                           </span>
-                       </a>
-                   </li>
                    
                     
                     <li>

@@ -18,11 +18,11 @@
       <guid>https://philmassie.github.io/post/20191217/serverless_ml/</guid>
       <description>&lt;!-- Style for changing title colour depending on photo --&gt;
 &lt;style&gt;
-   div.post-heading div #tags,
+   div.post-heading div.tags,
    div.post-heading h1, 
    div.post-heading h2 {
     color: #1a0d00;
-    text-shadow: 0px 0px 2px bisque;
+    text-shadow: 0px 0px 2px grey;
   }
 &lt;/style&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;

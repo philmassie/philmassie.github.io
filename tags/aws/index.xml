@@ -22,6 +22,7 @@
    div.post-heading h1, 
    div.post-heading h2 {
     color: #1a0d00;
+    text-shadow: 2px 2px #ff0000;
   }
 &lt;/style&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;

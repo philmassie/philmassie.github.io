@@ -214,9 +214,14 @@
 
                 
                 
-                <!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
+                <!-- Style for changing title colour depending on photo -->
+<style>
+   div.post-heading div #tags,
+   div.post-heading h1, 
+   div.post-heading h2 {
+    color: #1a0d00;
+  }
+</style>
 <h2 id="introduction">Introduction</h2>
 <p>Working day in and day out wrangling data sets, engineering interesting features and testing and training heaps and heaps of models can leave you feeling a bit disconnected from real-world systems. Well, it can for me at any rate. Recently I've spent time with some software engineers who've helped me understand how ML models can be deployed in the cloud by leveraging severless architectures, at little or no cost. As a result, models or ensembles of models can fit into larger systems via simple API calls.</p>
 <p>Using AWS Lambdas, we dont need to keep costly EC2 instances up and running 24/7. Lambdas spin up really fast as required. (Google Cloud have a similar offering called Cloud Functions but here I'll be focussing on the AWS offering.) In the background of course they are all running on EC2 servers but Lambdas are so abstracted away from them that you dont need to bother about the EC2s. There are many good reasons to think go serverless but I dont want to run an advert.<a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">You can read more here</a></p>
@@ -293,7 +298,7 @@ Default output format [None]: json
 <blockquote>
 <p>I think this is the only place you could potentially incur some costs. S3 storage is not free, although at this scale it is very cheap. After building your layers delete this bucket to save potential costs. I have a couple buckets with a few MB inside and I havent incurred a cost yet. It's a little confusing.</p>
 </blockquote>
-<p><img src="2019-12-17_17-28-38.png" alt=""><!-- raw HTML omitted --></p>
+<p><img src="2019-12-17_17-28-38.png" alt=""><!-- --></p>
 <h1 id="lambdas">Lambdas</h1>
 <p>Still there? well done! Ok lets build our first simple Lambda. We will expand on it later.</p>
 <h3 id="create-a-lambda">Create a Lambda</h3>

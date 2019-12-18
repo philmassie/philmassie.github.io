@@ -17,8 +17,11 @@
       
       <guid>https://philmassie.github.io/post/20160714/election_effort/</guid>
       <description>&lt;h1 id=&#34;style-for-changing-title-colour-depending-on-photo&#34;&gt;Style for changing title colour depending on photo&lt;/h1&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;style&gt;
+   div.post-heading span.meta {
+    color: black;
+  }
+&lt;/style&gt;
 &lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;With South Africa&#39;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.&lt;/p&gt;
 &lt;p&gt;Employing and promoting candidates costs money. Assuming that our political parties don&#39;t have infinite financial resources it follows that investigating where they invest their resources may be a reasonable proxy for effort. Furthermore, looking at the change in effort adds a temporal dimension, suggesting where effort has increased or decreased between the elections.&lt;/p&gt;
@@ -27,7 +30,9 @@
 &lt;p&gt;&lt;strong&gt;Absolute change&lt;/strong&gt;: The change in actual number of PR candidates in a party from 2011 to 2016.&lt;/p&gt;
 &lt;p&gt;Scroll below the map for more info regarding data sources and methods.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Disclaimer: As I said though, I am no political scientist and so maybe this is all nonsense.&lt;/em&gt;&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;iframe width=&#34;100%&#34; height=&#34;800px&#34; src=&#34;https://philmassie.github.io/election_effort_d3/za_election_effort_2016.html&#34; scrolling = &#34;no&#34; frameborder=&#34;0&#34; seamless name=&#34;iframe-election-content&#34; id=&#34;iframe-election-content&#34;&gt;
+&lt;p&gt;Your browser does not support iframes. Click &lt;a href=&#34;https://philmassie.github.io/election_effort_d3/&#34;&gt;here&lt;/a&gt; to navigate to the content.&lt;/p&gt;
+&lt;/iframe&gt;
 &lt;p&gt;Embed this map using the following iframe code:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;&amp;lt;iframe width=&amp;quot;100%&amp;quot; height=&amp;quot;660px&amp;quot; src=&amp;quot;https://philmassie.github.io/election_effort_d3/za_election_effort_2016.html&amp;quot; scrolling = &amp;quot;no&amp;quot; frameborder=&amp;quot;0&amp;quot; seamless name=&amp;quot;iframe-election-content&amp;quot; id=&amp;quot;iframe-election-content&amp;quot;&amp;gt;
 &amp;lt;p&amp;gt;Your browser does not support iframes. Click &amp;lt;a href=&amp;quot;https://philmassie.github.io/election_effort_d3/&amp;quot;&amp;gt;here&amp;lt;/a&amp;gt; to navigate to the content.&amp;lt;/p&amp;gt;

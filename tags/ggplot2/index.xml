@@ -16,9 +16,14 @@
       <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</guid>
-      <description>&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
+      <description>&lt;!-- Style for changing title colour depending on photo --&gt;
+&lt;style&gt;
+   div.post-heading h1, 
+   div.post-heading h2, 
+   div.post-heading span.meta {
+    color: midnightblue;
+  }
+&lt;/style&gt;
 &lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.&lt;/p&gt;
 &lt;p&gt;In my article I wanted a graphic which illustrated the preferred outward post-moult migration direction of adult female southern elephant seals from Marion Island. In reality it doesn&#39;t matter too much what you want to plot, and these sorts of plots are more generally used for wind direction illustrations. Really, they are like radial histograms. In fact, if you look through the ggplot2 call, it is basically a histogram until the last couple of lines, where it is wrapped into a wind rose.&lt;/p&gt;
@@ -32,7 +37,7 @@
 
 &lt;span class=&#34;c1&#34;&gt;# Take a quick look...&lt;/span&gt;
 &lt;span class=&#34;nf&#34;&gt;hist&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;direction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;main&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;Histogram of hypothetical direction frequencies.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;xlab&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;Direction&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ylab&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;Frequency&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;histo-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;histo-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;That looks like a reasonable distribution of directions, favouring 225°.&lt;/p&gt;
 &lt;h1 id=&#34;method&#34;&gt;Method&lt;/h1&gt;
 &lt;p&gt;There are various ways to split and plot these data. Some searching lead me &lt;a href=&#34;http://stackoverflow.com/questions/17266780/wind-rose-with-ggplot-r&#34;&gt;to this one&lt;/a&gt;. First we will define the bin width (30°), then we will define dir.breaks which stores the range of each bin as follows 345°-15°, 15°-45°, 45°-75° etc.&lt;/p&gt;
@@ -92,8 +97,8 @@
     &lt;span class=&#34;n&#34;&gt;thm&lt;/span&gt;
 
 &lt;span class=&#34;n&#34;&gt;plt.dirrose&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;
-&lt;img src=&#34;rose-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;
+&lt;img src=&#34;rose-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;There we have it; a wind rose, in grey scale illustrating our data exactly as we need it to.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Saving the plot according to the publishers requirements&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;
@@ -243,7 +248,7 @@ Those are the extents needed for the full study, but it&#39;s too much for the p
     &lt;span class=&#34;c1&#34;&gt;# include the theme settings&lt;/span&gt;
     &lt;span class=&#34;n&#34;&gt;thm&lt;/span&gt;
 &lt;span class=&#34;n&#34;&gt;plot.eke.colour&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;That looks pretty good. Unfortunately when we save the file, things don&#39;t always look the same as they do on the screen so there is generally some fine tuning involved. This version, as it stands, makes rather a good print. The colour palette is familiar to all my MATLAB/Python oceanographic colleagues too.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Saving the plot according to the publishers requirements&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;
@@ -296,7 +301,7 @@ Those are the extents needed for the full study, but it&#39;s too much for the p
     &lt;span class=&#34;nf&#34;&gt;geom_text&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lbl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;aes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;label&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;txt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;rel&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;colour&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;white&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
     &lt;span class=&#34;n&#34;&gt;thm&lt;/span&gt;
 &lt;span class=&#34;n&#34;&gt;plot.eke.contour.grey&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;greyscale_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;greyscale_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;There we go! The contours look great. There aren&#39;t too many of them, they don&#39;t have distracting borders, the 3000 m bathymetry contour looks nice and isn&#39;t overly distracting.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Saving the plot according to the publishers requirements&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;

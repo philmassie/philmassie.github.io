@@ -16,9 +16,14 @@
       <pubDate>Tue, 17 Dec 2019 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20191217/serverless_ml/</guid>
-      <description>&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
+      <description>&lt;!-- Style for changing title colour depending on photo --&gt;
+&lt;style&gt;
+   div.post-heading div #tags,
+   div.post-heading h1, 
+   div.post-heading h2 {
+    color: #1a0d00;
+  }
+&lt;/style&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;Working day in and day out wrangling data sets, engineering interesting features and testing and training heaps and heaps of models can leave you feeling a bit disconnected from real-world systems. Well, it can for me at any rate. Recently I&#39;ve spent time with some software engineers who&#39;ve helped me understand how ML models can be deployed in the cloud by leveraging severless architectures, at little or no cost. As a result, models or ensembles of models can fit into larger systems via simple API calls.&lt;/p&gt;
 &lt;p&gt;Using AWS Lambdas, we dont need to keep costly EC2 instances up and running 24/7. Lambdas spin up really fast as required. (Google Cloud have a similar offering called Cloud Functions but here I&#39;ll be focussing on the AWS offering.) In the background of course they are all running on EC2 servers but Lambdas are so abstracted away from them that you dont need to bother about the EC2s. There are many good reasons to think go serverless but I dont want to run an advert.&lt;a href=&#34;https://docs.aws.amazon.com/lambda/latest/dg/welcome.html&#34;&gt;You can read more here&lt;/a&gt;&lt;/p&gt;
@@ -95,7 +100,7 @@ Default output format [None]: json
 &lt;blockquote&gt;
 &lt;p&gt;I think this is the only place you could potentially incur some costs. S3 storage is not free, although at this scale it is very cheap. After building your layers delete this bucket to save potential costs. I have a couple buckets with a few MB inside and I havent incurred a cost yet. It&#39;s a little confusing.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&#34;2019-12-17_17-28-38.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;2019-12-17_17-28-38.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;h1 id=&#34;lambdas&#34;&gt;Lambdas&lt;/h1&gt;
 &lt;p&gt;Still there? well done! Ok lets build our first simple Lambda. We will expand on it later.&lt;/p&gt;
 &lt;h3 id=&#34;create-a-lambda&#34;&gt;Create a Lambda&lt;/h3&gt;
@@ -719,8 +724,11 @@ zip -r ../zips/03_rain_model.zip .
       
       <guid>https://philmassie.github.io/post/20160714/election_effort/</guid>
       <description>&lt;h1 id=&#34;style-for-changing-title-colour-depending-on-photo&#34;&gt;Style for changing title colour depending on photo&lt;/h1&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;style&gt;
+   div.post-heading span.meta {
+    color: black;
+  }
+&lt;/style&gt;
 &lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;With South Africa&#39;s municipal elections in a few days time (3rd August 2016), I wondered about the effort being expended by the parties in each district or municipality. Has it increased or decreased since the 2011 elections? I must point out that I am not a political analyst or a political scientist. I am nevertheless a scientist with an appreciation for analytics.&lt;/p&gt;
 &lt;p&gt;Employing and promoting candidates costs money. Assuming that our political parties don&#39;t have infinite financial resources it follows that investigating where they invest their resources may be a reasonable proxy for effort. Furthermore, looking at the change in effort adds a temporal dimension, suggesting where effort has increased or decreased between the elections.&lt;/p&gt;
@@ -729,7 +737,9 @@ zip -r ../zips/03_rain_model.zip .
 &lt;p&gt;&lt;strong&gt;Absolute change&lt;/strong&gt;: The change in actual number of PR candidates in a party from 2011 to 2016.&lt;/p&gt;
 &lt;p&gt;Scroll below the map for more info regarding data sources and methods.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Disclaimer: As I said though, I am no political scientist and so maybe this is all nonsense.&lt;/em&gt;&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;iframe width=&#34;100%&#34; height=&#34;800px&#34; src=&#34;https://philmassie.github.io/election_effort_d3/za_election_effort_2016.html&#34; scrolling = &#34;no&#34; frameborder=&#34;0&#34; seamless name=&#34;iframe-election-content&#34; id=&#34;iframe-election-content&#34;&gt;
+&lt;p&gt;Your browser does not support iframes. Click &lt;a href=&#34;https://philmassie.github.io/election_effort_d3/&#34;&gt;here&lt;/a&gt; to navigate to the content.&lt;/p&gt;
+&lt;/iframe&gt;
 &lt;p&gt;Embed this map using the following iframe code:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;&amp;lt;iframe width=&amp;quot;100%&amp;quot; height=&amp;quot;660px&amp;quot; src=&amp;quot;https://philmassie.github.io/election_effort_d3/za_election_effort_2016.html&amp;quot; scrolling = &amp;quot;no&amp;quot; frameborder=&amp;quot;0&amp;quot; seamless name=&amp;quot;iframe-election-content&amp;quot; id=&amp;quot;iframe-election-content&amp;quot;&amp;gt;
 &amp;lt;p&amp;gt;Your browser does not support iframes. Click &amp;lt;a href=&amp;quot;https://philmassie.github.io/election_effort_d3/&amp;quot;&amp;gt;here&amp;lt;/a&amp;gt; to navigate to the content.&amp;lt;/p&amp;gt;
@@ -842,9 +852,14 @@ zip -r ../zips/03_rain_model.zip .
       <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20160630/ggplot2_wind_rose/</guid>
-      <description>&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
+      <description>&lt;!-- Style for changing title colour depending on photo --&gt;
+&lt;style&gt;
+   div.post-heading h1, 
+   div.post-heading h2, 
+   div.post-heading span.meta {
+    color: midnightblue;
+  }
+&lt;/style&gt;
 &lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.&lt;/p&gt;
 &lt;p&gt;In my article I wanted a graphic which illustrated the preferred outward post-moult migration direction of adult female southern elephant seals from Marion Island. In reality it doesn&#39;t matter too much what you want to plot, and these sorts of plots are more generally used for wind direction illustrations. Really, they are like radial histograms. In fact, if you look through the ggplot2 call, it is basically a histogram until the last couple of lines, where it is wrapped into a wind rose.&lt;/p&gt;
@@ -858,7 +873,7 @@ zip -r ../zips/03_rain_model.zip .
 
 &lt;span class=&#34;c1&#34;&gt;# Take a quick look...&lt;/span&gt;
 &lt;span class=&#34;nf&#34;&gt;hist&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;direction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;main&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;Histogram of hypothetical direction frequencies.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;xlab&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;Direction&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ylab&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;Frequency&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;histo-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;histo-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;That looks like a reasonable distribution of directions, favouring 225°.&lt;/p&gt;
 &lt;h1 id=&#34;method&#34;&gt;Method&lt;/h1&gt;
 &lt;p&gt;There are various ways to split and plot these data. Some searching lead me &lt;a href=&#34;http://stackoverflow.com/questions/17266780/wind-rose-with-ggplot-r&#34;&gt;to this one&lt;/a&gt;. First we will define the bin width (30°), then we will define dir.breaks which stores the range of each bin as follows 345°-15°, 15°-45°, 45°-75° etc.&lt;/p&gt;
@@ -918,8 +933,8 @@ zip -r ../zips/03_rain_model.zip .
     &lt;span class=&#34;n&#34;&gt;thm&lt;/span&gt;
 
 &lt;span class=&#34;n&#34;&gt;plt.dirrose&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;
-&lt;img src=&#34;rose-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;
+&lt;img src=&#34;rose-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;There we have it; a wind rose, in grey scale illustrating our data exactly as we need it to.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Saving the plot according to the publishers requirements&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;
@@ -1069,7 +1084,7 @@ Those are the extents needed for the full study, but it&#39;s too much for the p
     &lt;span class=&#34;c1&#34;&gt;# include the theme settings&lt;/span&gt;
     &lt;span class=&#34;n&#34;&gt;thm&lt;/span&gt;
 &lt;span class=&#34;n&#34;&gt;plot.eke.colour&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;That looks pretty good. Unfortunately when we save the file, things don&#39;t always look the same as they do on the screen so there is generally some fine tuning involved. This version, as it stands, makes rather a good print. The colour palette is familiar to all my MATLAB/Python oceanographic colleagues too.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Saving the plot according to the publishers requirements&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;
@@ -1122,7 +1137,7 @@ Those are the extents needed for the full study, but it&#39;s too much for the p
     &lt;span class=&#34;nf&#34;&gt;geom_text&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lbl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;aes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;label&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;txt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;rel&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;colour&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;white&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
     &lt;span class=&#34;n&#34;&gt;thm&lt;/span&gt;
 &lt;span class=&#34;n&#34;&gt;plot.eke.contour.grey&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;greyscale_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;greyscale_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;There we go! The contours look great. There aren&#39;t too many of them, they don&#39;t have distracting borders, the 3000 m bathymetry contour looks nice and isn&#39;t overly distracting.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Saving the plot according to the publishers requirements&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;

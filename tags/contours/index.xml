@@ -150,7 +150,7 @@ Those are the extents needed for the full study, but it&#39;s too much for the p
     &lt;span class=&#34;c1&#34;&gt;# include the theme settings&lt;/span&gt;
     &lt;span class=&#34;n&#34;&gt;thm&lt;/span&gt;
 &lt;span class=&#34;n&#34;&gt;plot.eke.colour&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;coloured_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;That looks pretty good. Unfortunately when we save the file, things don&#39;t always look the same as they do on the screen so there is generally some fine tuning involved. This version, as it stands, makes rather a good print. The colour palette is familiar to all my MATLAB/Python oceanographic colleagues too.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Saving the plot according to the publishers requirements&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;
@@ -203,7 +203,7 @@ Those are the extents needed for the full study, but it&#39;s too much for the p
     &lt;span class=&#34;nf&#34;&gt;geom_text&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lbl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;aes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;label&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;txt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;rel&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;colour&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;white&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;
     &lt;span class=&#34;n&#34;&gt;thm&lt;/span&gt;
 &lt;span class=&#34;n&#34;&gt;plot.eke.contour.grey&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;greyscale_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;greyscale_plot-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;There we go! The contours look great. There aren&#39;t too many of them, they don&#39;t have distracting borders, the 3000 m bathymetry contour looks nice and isn&#39;t overly distracting.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Saving the plot according to the publishers requirements&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;For completeness, this is one approach to saving your plots&lt;/p&gt;

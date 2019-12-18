@@ -215,9 +215,14 @@
   </ul>
 </nav>
                 
-                <!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
+                <!-- Style for changing title colour depending on photo -->
+<style>
+   div.post-heading h1, 
+   div.post-heading h2, 
+   div.post-heading span.meta {
+    color: midnightblue;
+  }
+</style>
 <h1 id="introduction">Introduction</h1>
 <p>This is another post regarding some plots that I needed to make for a publication. As before, I relied heavily on Stack Exchange and many other sites for figuring out how to get my plot looking the way I needed it to, and so this is my attempt to contribute back to the broader community.</p>
 <p>In my article I wanted a graphic which illustrated the preferred outward post-moult migration direction of adult female southern elephant seals from Marion Island. In reality it doesn't matter too much what you want to plot, and these sorts of plots are more generally used for wind direction illustrations. Really, they are like radial histograms. In fact, if you look through the ggplot2 call, it is basically a histogram until the last couple of lines, where it is wrapped into a wind rose.</p>
@@ -231,7 +236,7 @@
 
 <span class="c1"># Take a quick look...</span>
 <span class="nf">hist</span><span class="p">(</span><span class="n">data</span><span class="o">$</span><span class="n">direction</span><span class="p">,</span> <span class="n">main</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">Histogram of hypothetical direction frequencies.&#34;</span><span class="p">,</span> <span class="n">xlab</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">Direction&#34;</span><span class="p">,</span> <span class="n">ylab</span> <span class="o">=</span> <span class="s">&#34;</span><span class="s">Frequency&#34;</span><span class="p">)</span>
-</code></pre></div><p><img src="histo-1.png" alt=""><!-- raw HTML omitted --></p>
+</code></pre></div><p><img src="histo-1.png" alt=""><!-- --></p>
 <p>That looks like a reasonable distribution of directions, favouring 225°.</p>
 <h1 id="method">Method</h1>
 <p>There are various ways to split and plot these data. Some searching lead me <a href="http://stackoverflow.com/questions/17266780/wind-rose-with-ggplot-r">to this one</a>. First we will define the bin width (30°), then we will define dir.breaks which stores the range of each bin as follows 345°-15°, 15°-45°, 45°-75° etc.</p>
@@ -291,8 +296,8 @@
     <span class="n">thm</span>
 
 <span class="n">plt.dirrose</span>
-</code></pre></div><p><img src="coloured_plot-1.png" alt=""><!-- raw HTML omitted -->
-<img src="rose-1.png" alt=""><!-- raw HTML omitted --></p>
+</code></pre></div><p><img src="coloured_plot-1.png" alt=""><!-- -->
+<img src="rose-1.png" alt=""><!-- --></p>
 <p>There we have it; a wind rose, in grey scale illustrating our data exactly as we need it to.</p>
 <p><em><strong>Saving the plot according to the publishers requirements</strong></em></p>
 <p>For completeness, this is one approach to saving your plots</p>

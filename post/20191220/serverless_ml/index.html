@@ -13,8 +13,8 @@
     <meta property="og:type" content="article">
 
     
-    <meta property="og:image" content="https://philmassie.github.io//post/20191220/serverless_ml/2019-12-17_17-44-47.png">
-    <meta property="twitter:image" content="https://philmassie.github.io//post/20191220/serverless_ml/2019-12-17_17-44-47.png" />
+    <meta property="og:image" content="https://philmassie.github.io//post/20191220/serverless_ml/20110410_162424_the_hoek-2.jpg">
+    <meta property="twitter:image" content="https://philmassie.github.io//post/20191220/serverless_ml/20110410_162424_the_hoek-2.jpg" />
     
 
     
@@ -143,7 +143,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('/post/20191220/serverless_ml/2019-12-17_17-44-47.png')
+        background-image: url('/post/20191220/serverless_ml/20110410_162424_the_hoek-2.jpg')
     }
 </style>
 <header class="intro-header">
@@ -214,7 +214,7 @@
 
                 
                 
-                <!-- Style for changing title colour depending on photo -->
+                <!-- Style for changing title colour depending on photo 
 <style>
    div.post-heading div.tags,
    div.post-heading h1, 
@@ -223,6 +223,7 @@
     text-shadow: 0px 0px 2px grey;
   }
 </style>
+-->
 <h2 id="introduction">Introduction</h2>
 <p>Working day in and day out wrangling data sets, engineering interesting features and testing and training heaps and heaps of models can leave you feeling a bit disconnected from real-world systems. Well, it can for me at any rate. Recently I've spent time with some software engineers who've helped me understand how ML models can be deployed in the cloud by leveraging severless architectures, at little or no cost. As a result, models or ensembles of models can fit into larger systems via simple API calls.</p>
 <p>Using AWS Lambdas, we dont need to keep costly EC2 instances up and running 24/7. Lambdas spin up really fast as required. (Google Cloud have a similar offering called Cloud Functions but here I'll be focussing on the AWS offering.) In the background of course they are all running on EC2 servers but Lambdas are so abstracted away from them that you dont need to bother about the EC2s. There are many good reasons to think go serverless but I dont want to run an advert. <a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">You can read more here</a></p>

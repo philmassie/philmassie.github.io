@@ -5,15 +5,15 @@
     <description>Recent content in python on Kabelsalat</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 18 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 20 Dec 2019 00:00:00 +0000</lastBuildDate>
     
         <atom:link href="https://philmassie.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Serverless ML.</title>
+      <title>Serverless ML</title>
       <link>https://philmassie.github.io/post/20191220/serverless_ml/</link>
-      <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 20 Dec 2019 00:00:00 +0000</pubDate>
       
       <guid>https://philmassie.github.io/post/20191220/serverless_ml/</guid>
       <description>&lt;!-- Style for changing title colour depending on photo 
@@ -27,8 +27,8 @@
 &lt;/style&gt;
 --&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;Working day in and day out wrangling data sets, engineering interesting features and testing and training heaps and heaps of models can leave you feeling a bit disconnected from real-world systems. Well, it can for me at any rate. Recently I&#39;ve spent time with some software engineers who&#39;ve helped me understand how ML models can be deployed in the cloud by leveraging severless architectures, at little or no cost. As a result, models or ensembles of models can fit into larger systems via simple API calls.&lt;/p&gt;
-&lt;p&gt;Using AWS Lambdas, we dont need to keep costly EC2 instances up and running 24/7. Lambdas spin up really fast as required. (Google Cloud have a similar offering called Cloud Functions but here I&#39;ll be focussing on the AWS offering.) In the background of course they are all running on EC2 servers but Lambdas are so abstracted away from them that you dont need to bother about the EC2s. There are many good reasons to think go serverless but I dont want to run an advert. &lt;a href=&#34;https://docs.aws.amazon.com/lambda/latest/dg/welcome.html&#34;&gt;You can read more here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Working day in and day out wrangling data sets, engineering interesting features and testing and training heaps and heaps of models can leave you feeling a bit disconnected from real-world systems. Well, it can for me at any rate. Recently I&#39;ve spent time with some software engineers who&#39;ve helped me understand how ML models can be deployed in the cloud by leveraging serverless architectures, at little or no cost. As a result, models or ensembles of models can fit into larger systems via simple API calls.&lt;/p&gt;
+&lt;p&gt;Using AWS Lambdas, we don&#39;t need to keep costly EC2 instances up and running 24/7. Lambdas spin up really fast as required. (Google Cloud have a similar offering called Cloud Functions but here I&#39;ll be focusing on the AWS offering.) In the background of course they are all running on EC2 servers but Lambdas are so abstracted away from them that you don&#39;t need to bother about the EC2s. There are many good reasons to think go serverless but I don&#39;t want to run an advert. &lt;a href=&#34;https://docs.aws.amazon.com/lambda/latest/dg/welcome.html&#34;&gt;You can read more here&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;A Lambda is essentially a small fast container preconfigured with one of a number of different runtimes. These include:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;several Node.js variants&lt;/li&gt;
@@ -38,11 +38,11 @@
 &lt;/ul&gt;
 &lt;p&gt;As a data scientist I work principally with Python these days and in this tutorial I&#39;ll walk you through deploying a simple ML model in an AWS Lambda. There is an accompanying github repo &lt;a href=&#34;https://github.com/philmassie/serverless_ml.git&#34;&gt;here&lt;/a&gt; which includes all the code you&#39;ll need along with the model, data and training data.&lt;/p&gt;
 &lt;h3 id=&#34;the-model&#34;&gt;The Model&lt;/h3&gt;
-&lt;p&gt;This is not an exercise in training a great model. As a use case I used historical weather data for Cape Town to train a model to predict the likelihood of rain tomorrow based on Cape Town&#39;s history. you can feed it any city in the world, and it will predict whether it will rain there tomorrow based on Cape Town&#39;s history. That&#39;s ok, it&#39;s not really the point.&lt;/p&gt;
+&lt;p&gt;This is not an exercise in training a great model. As a use case I used historical weather data for Cape Town to train a model to predict the likelihood of rain tomorrow based on Cape Town&#39;s history. You can feed it any city in the world, and it will predict whether it will rain there tomorrow based on Cape Town&#39;s history. That&#39;s ok, it&#39;s not really the point.&lt;/p&gt;
 &lt;h3 id=&#34;the-point&#34;&gt;The Point&lt;/h3&gt;
-&lt;p&gt;If you are unfamiliar with Lambdas or dissilusioned with the costs of housing your Docker Containers on EC2 instances, hopefully this will give you an idea of how cheap and easy it can be to think about larger more complex systems of models and code. With luck your creative juices will be stimulated.&lt;/p&gt;
+&lt;p&gt;If you are unfamiliar with Lambdas or disillusioned with the costs of housing your Docker Containers on EC2 instances, hopefully this will give you an idea of how cheap and easy it can be to think about larger more complex systems of models and code. With luck your creative juices will be stimulated.&lt;/p&gt;
 &lt;h2 id=&#34;requirements&#34;&gt;Requirements&lt;/h2&gt;
-&lt;p&gt;This looks a little tedious but is worth figuring out. Much of it you will only need to do once. I&#39;ll gloss over some things here like AWS execution roles and key management. Additionally the tutorial will use both the AWS web console and the CLI. If youre unfamiliar with the CLI, hopefully this will be an easy introduction to it.&lt;/p&gt;
+&lt;p&gt;This looks a little tedious but is worth figuring out. Much of it you will only need to do once. I&#39;ll gloss over some things here like AWS execution roles and key management. Additionally the tutorial will use both the AWS web console and the CLI. If you&#39;re unfamiliar with the CLI, hopefully this will be an easy introduction to it.&lt;/p&gt;
 &lt;h3 id=&#34;python-36&#34;&gt;Python 3.6&lt;/h3&gt;
 &lt;p&gt;We will use the Python 3.6 Lambda runtime environment as this runtime comes with a preconfigured layer containing scipy/numpy. Because these packages have OS dependencies not present in the Lambda environment by default, this layer is critical for us to use any of the low level math functions such as those in SKLearn. I see that the Python 3.7 runtime also has a scipy/numpy layer now!&lt;/p&gt;
 &lt;h3 id=&#34;docker&#34;&gt;Docker&lt;/h3&gt;
@@ -91,7 +91,7 @@ aws --version
 &lt;li&gt;Download the csv with your key and secret key and save somewhere safe&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Back to your terminal (&lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html#cli-quick-configuration&#34;&gt;detailed instructions&lt;/a&gt;):&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ aws configure
+&lt;pre&gt;&lt;code&gt;aws configure
 AWS Access Key ID [None]: ABABABABAEXAMPLE
 AWS Secret Access Key [None]:CDCDCDCDCDCDCDCDCDCDCEXAMPLEKEY
 Default region name [None]: us-west-2
@@ -212,9 +212,9 @@ Default output format [None]: json
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;You have now got a simple Lambda, accessible via a URL, you can send it a payload, and it can process and return the payload, in this case as an HTTP response.&lt;/p&gt;
-&lt;h1 id=&#34;extenting-the-lambda&#34;&gt;Extenting the Lambda&lt;/h1&gt;
+&lt;h1 id=&#34;extending-the-lambda&#34;&gt;Extending the Lambda&lt;/h1&gt;
 &lt;h3 id=&#34;layers&#34;&gt;layers&lt;/h3&gt;
-&lt;p&gt;Before we add more code to do more interesting things, lets make our Lambda architecture a little more powerful. We can do this by adding layers. Layers are simply additional resources youre including in your Lambda container - There are size constraints to deal with so dont go too crazy.&lt;/p&gt;
+&lt;p&gt;Before we add more code to do more interesting things, lets make our Lambda architecture a little more powerful. We can do this by adding layers. Layers are simply additional resources you&#39;re including in your Lambda container - There are size constraints to deal with so don&#39;t go too crazy.&lt;/p&gt;
 &lt;p&gt;After this section we can get back to the code and extend the Lambda.
 If you have the &lt;a href=&#34;https://github.com/philmassie/serverless_ml.git&#34;&gt;github repo&lt;/a&gt; you&#39;ll see that I have the files required to build each layer nested within a layers directory.&lt;/p&gt;
 &lt;p&gt;Typically we need to collate the contents of each layer, upload them to S3, compile the contents into Lambda layers and then attach the layers to our Lambda.&lt;/p&gt;
@@ -239,7 +239,7 @@ zip -r ../zips/02_dependencies.zip python
 &lt;span class=&#34;nb&#34;&gt;popd&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;upload-the-layer-to-s3&#34;&gt;Upload the layer to S3&lt;/h4&gt;
 &lt;p&gt;Using the AWS CLI instead of the web Console, sync the contents of your zips directory with a location in S3.
-It&#39;s a good idea to keep the web console open to see that what youre doing is having the desired effect.&lt;/p&gt;
+It&#39;s a good idea to keep the web console open to see that what you&#39;re doing is having the desired effect.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-Shell&#34; data-lang=&#34;Shell&#34;&gt;aws s3 sync layers/zips s3://severless-ml-tutorial/lambdas/layers --delete
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;buildupdate-layer-02-dependencies&#34;&gt;Build/update layer 02_dependencies&lt;/h4&gt;
 &lt;p&gt;Now we can use the uploaded zip file to update or create a Lambda layer that can be used in any Python 3.6 Lambda. Remember to change the name of your bucket next to S3Bucket=.&lt;/p&gt;
@@ -267,7 +267,7 @@ zip -r ../zips/03_rain_model.zip .
 &lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;buildupdate-layer-03-rain-model&#34;&gt;Build/update layer 03_rain_model&lt;/h4&gt;
 &lt;p&gt;&amp;hellip; and build the layer. Remember to change your bucket name here.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;aws lambda publish-layer-version --layer-name weather_03_model --description &amp;quot;model layer&amp;quot; --content S3Bucket=severless-ml-tutorial,S3Key=lambdas/layers/03_rain_model.zip --compatible-runtimes python3.6
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;check-that-layers-have-been-succesfully-created&#34;&gt;Check that layers have been succesfully created&lt;/h3&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;check-that-layers-have-been-successfully-created&#34;&gt;Check that layers have been successfully created&lt;/h3&gt;
 &lt;p&gt;Use the AWS web console to make sure layers exist.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;S3 section
@@ -312,7 +312,7 @@ zip -r ../zips/03_rain_model.zip .
 &lt;/ol&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;Dont forget to click Save!&lt;/p&gt;
+&lt;p&gt;Don&#39;t forget to click Save!&lt;/p&gt;
 &lt;p&gt;That&#39;s it for the set-up. If you&#39;ve gotten this far well done! Writing this out, it seems very long. All that&#39;s left now is to build out the code!&lt;/p&gt;
 &lt;h1 id=&#34;build-out-the-code&#34;&gt;Build out the code&lt;/h1&gt;
 &lt;p&gt;Each of the following steps expands on the code from the previous step. To follow along and see how the functionality grows, add each block of code to the bottom of the previous, overwriting the previous code&#39;s return braces. After updating and saving at each step, reload the API endpoint URL and submit a different city if you&#39;d like.&lt;/p&gt;
